@@ -84,5 +84,26 @@ Solved using Javascripts builtin string split function which allows you to split
         return len
 
     };
+/** Leetcode 66. Plus One
+ * @param {number[]} digits
+ * @return {number[]}
+ Input: digits = [4,3,2,1]
+Output: [4,3,2,2]
+Explanation: The array represents the integer 4321.
+Incrementing by one gives 4321 + 1 = 4322.
+Thus, the result should be [4,3,2,2].
+I was able to solve it by first using the .join array method which combined the result into a string the you convert that to an int add one to it and them using Javascripts splice method and map methods to return it as an array +1 
+ */
+var plusOne = function(digits) {
+   let str = digits.join("")
+    let sum = parseInt(str);
+   sum+=1
+    str = sum.toString()
+    let digArr= str.split('').map(Number)
+ //Playing around with it I also figured you could do the last part with the following instead of directly mapping it by Number
+ // let digArr= str.split('')
+ // let arr = digArr.map((str)=>parseInt(str, 10))
+    return digArr
+};
 
 
