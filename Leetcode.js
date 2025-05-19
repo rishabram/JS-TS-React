@@ -31,6 +31,8 @@ var removeDuplicates = function(nums) {
 Output: 0
 Explanation: "sad" occurs at index 0 and 6.
 The first occurrence is at index 0, so we return 0.
+Finished leetcode 28 by learning how to use Javascripts built in string function "indexOf' which returns the first occurrence of an index of a term from the documentation
+
  */
 
    var strStr = function(haystack, needle) {
