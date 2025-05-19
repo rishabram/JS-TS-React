@@ -6,6 +6,7 @@
 Output: 5, nums = [0,1,2,3,4,_,_,_,_,_]
 Explanation: Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.
 It does not matter what you leave beyond the returned k (hence they are underscores).
+Solved using the set function from javascript which doesnt allow repetions of elements and using splice to populate the unique letter array
  */
 var removeDuplicates = function(nums) {
     const numSet= new Set(nums);
@@ -68,4 +69,20 @@ Solved using binary search and also passes requirement that its faster than O(lo
 
                }return left
     }
+/** Leetcode 58. Length of Last Word
+ * @param {string} s
+ * @return {number}
+ Input: s = "luffy is still joyboy"
+Output: 6
+Explanation: The last word is "joyboy" with length 6.
+Solved using Javascripts builtin string split function which allows you to split a string based on a chosen seperator value and also using the trim function which cuts off whitespace off both ends of a string as well as using thge .at function from array which solves the issue of not being able to use arr[-1] as its considered a string literal in the square brackets
+ */
+ var lengthOfLastWord = function(s) {
+        const t = s.trim()
+        const res = t.split(" ");
+        const len = res.at(-1).length;
+        return len
+
+    };
+
 
