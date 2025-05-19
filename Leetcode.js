@@ -22,3 +22,22 @@ var removeDuplicates = function(nums) {
     return numSet.size;
    
 };
+//leetcode 28. Find the Index of the First Occurrence in a String
+/**
+ * @param {string} haystack
+ * @param {string} needle
+ * @return {number}
+ Input: haystack = "sadbutsad", needle = "sad"
+Output: 0
+Explanation: "sad" occurs at index 0 and 6.
+The first occurrence is at index 0, so we return 0.
+ */
+
+   var strStr = function(haystack, needle) {
+        if (haystack.includes(needle)){
+         return haystack.indexOf(needle);
+        }
+        else return -1;
+
+    };
+
