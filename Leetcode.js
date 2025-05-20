@@ -111,6 +111,7 @@ var plusOne = function(digits) {
  Input: nums = [null, {}, 3]
 Output: 3
 Explanation: Calling nums.last() should return the last element: 3.
+Solved just using the .at function from arrays because you can't use [-1] because its considered a string literal in there
  */
 Array.prototype.last = function() {
     if (this.length > 0){
