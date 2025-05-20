@@ -11,6 +11,7 @@ let person ={
     name: 'Rishab',
     age: 19
 }
+
 console.log(person)
 
 person.name ='Timmy'
@@ -151,7 +152,23 @@ console.log(animals.mySplice(2, -1));
 
 console.log(animals.mySplice());
 // Expected output: Array ["ant", "bison", "camel", "duck", "elephant"]
+const myPromise = new Promise((resolve,reject)=>{
+    const success = true
+    if (success){
+        resolve('Promise sucessfully resolved!')
+    }
+    else{
+        reject('Promise rejected :(')
+    }
+});
+myPromise.then((res)=>{console.log(res)})
+    .catch((error)=>{console.log(error)});
 
+const fetchData=()=>{
+    return new Promise((resolve)=>setTimeout(()=>{resolve("Data Sucessfully fetched!");},200));
+}
+
+fetchData().then((data)=>{console.log(data)});
 
 
 
