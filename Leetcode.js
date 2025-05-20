@@ -139,6 +139,23 @@ var createCounter = function(n) {
         
     };
 };
+/** Leetcode 2621. Sleep
+ * @param {number} millis
+ * @return {Promise}
+ Input: millis = 100
+Output: 100
+Explanation: It should return a promise that resolves after 100ms.
+let t = Date.now();
+sleep(100).then(() => {
+  console.log(Date.now() - t); // 100
+});
+Solved using setTimeout using new Promise constructor
+ */
+async function sleep(millis) {
+    return new Promise((resolve)=>{setTimeout(resolve,millis);})
+    
+}
+
 
 
 
