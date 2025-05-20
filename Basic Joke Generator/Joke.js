@@ -3,7 +3,7 @@ import React, { useState } from "react";
   const [joke,setJoke] =  useState('');
 
      async function handleJoke(){
-         const res =await fetch('https://sv443.net/jokeapi/v2/joke/Programming?type=single')
+         const res =await ('https://sv443.net/jokeapi/v2/joke/Programming?type=single')
              .then((res)=>res.json())
              .then((data)=>setJoke(data.joke))
 
