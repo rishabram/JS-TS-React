@@ -10,16 +10,16 @@ function App() {
  const handleAdd=()=>{
      setTodos([...todos,input])
      setInput('')
-
     }
+
     return (
         <div className="App">
             <header className="App-header">
                 ToDoList
             </header>
             <div className="app-body">
-                <InputBox input={input} setInput={setInput}/>
-                <button onClick={handleAdd}>Add Task</button>
+                <InputBox input={input} setInput={setInput} handleAdd={handleAdd}/>
+                <button onClick={handleAdd} >Add Task</button>
                 <TodoList todos={todos} setTodos={setTodos} />
 
             </div>
