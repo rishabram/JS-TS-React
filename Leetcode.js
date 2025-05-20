@@ -106,4 +106,22 @@ var plusOne = function(digits) {
     return digArr
 };
 
+/** Leetcode 2619. Array Prototype Last
+ * @return {null|boolean|number|string|Array|Object}
+ Input: nums = [null, {}, 3]
+Output: 3
+Explanation: Calling nums.last() should return the last element: 3.
+ */
+Array.prototype.last = function() {
+    if (this.length > 0){
+        return this.at(-1);
+    }
+   else return -1;
+};
+
+/**
+ * const arr = [1, 2, 3];
+ * arr.last(); // 3
+ */
+
 
