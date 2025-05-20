@@ -119,10 +119,26 @@ Array.prototype.last = function() {
     }
    else return -1;
 };
-
-/**
- * const arr = [1, 2, 3];
- * arr.last(); // 3
+/** Leetcode 2620. Counter
+ * @param {number} n
+ * @return {Function} counter
+ Input: 
+n = 10 
+["call","call","call"]
+Output: [10,11,12]
+Explanation: 
+counter() = 10 // The first time counter() is called, it returns n.
+counter() = 11 // Returns 1 more than the previous time.
+counter() = 12 // Returns 1 more than the previous time.
+Solved using a closer which uses an outer and inner function where the inner function uses a varibale from the outer function but still need more practice with it
  */
+var createCounter = function(n) {
+    let count = n
+    return function() {
+        return count++
+        
+    };
+};
+
 
 
