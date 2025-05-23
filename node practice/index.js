@@ -1,28 +1,31 @@
-/*var http = require('http');
-
-http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end('Hello World!');
-}).listen(8080)
-*/
-
 const express = require('express');
-const app = express();
-const port = 8000
 const cors = require('cors');
+const app = express();
+const port = 5000;
+const bodyParser = require('body-parser');
 
-app.use(express.json());
 app.use(cors());
+app.use(bodyParser.json())
 
-app.get('/', (req, res) => {
-    res.send('<h1>Welcome!</h1>');
+const data = [
+    { id: 1, name: 'Item 1' },
+{ id: 2, name: 'Item 2' },
+];
+
+app.get('/api/items', (req, res) => {
+    res.json(data);
 });
 
-app.get('/api/hi', (req, res) => {
-    res.json({message:'Hello from server'});
-});
-
+app.post('/api/items', (req,res)=>{
+    newItem={
+        id: data.length+1,
+        name: req.body.name
+    }
+    data.push(newItem)
+    res.json(newItem)
+})
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-});;
+});
+     
