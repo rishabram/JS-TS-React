@@ -208,6 +208,24 @@ var compose = function(functions) {
  * const fn = compose([x => x + 1, x => 2 * x])
  * fn(4) // 9
  */
+/** Leetcode - 2634. Filter Elements from Array
+ * @param {number[]} arr
+ * @param {Function} fn
+ * @return {number[]}
+ */
+var filter = function(arr, fn) {
+    filteredArr= []
+    len = arr.length
+    for (let i=0;i<len;i++){
+        if (i in arr){
+           if (fn.call(arr,arr[i],i)){
+            filteredArr.push(arr[i])
+           }
+        }
+    }
+    return filteredArr
+    
+};
 
 
 
