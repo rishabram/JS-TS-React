@@ -226,6 +226,21 @@ var filter = function(arr, fn) {
     return filteredArr
     
 };
+/** 2635. Apply Transform Over Each Element in Array
+ * @param {number[]} arr
+ * @param {Function} fn
+ * @return {number[]}
+ */
+var map = function(arr, fn) {
+    newArr = []
+    len = arr.length
+    for (let i=0;i<len;i++){
+        if (i in arr){
+            newArr.push(fn.call(arr,arr[i],i))  
+        }
+    }
+    return newArr
+};
 
 
 
