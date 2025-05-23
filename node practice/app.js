@@ -1,19 +1,35 @@
-import React, {useState, useEffect} from "react";
+import React, { useEffect, useState } from 'react';
+import './App.css';
 
-
-export default function App() {
-    const [message, setMessage] = useState('');
-
-    useEffect(() => {
-        fetch('http://localhost:8000/api/hi')
-            .then(res => res.json())
-            .then(data => setMessage(data.message))
-    }, [])
-    console.log(message)
-
+function App() {
+    const [items, setItems] = useState([]);
+    const [newItem,setNewItem] = useState('')
+    useEffect(()=>{
+        fetch('http://localhost:5000/api/items')
+            .then((res)=>res.json())
+            .then((data)=>setItems(data))
+    },[])
+    async function handleSubmit(e){
+        e.preventDefault();
+        const res = await fetch('http://localhost:5000/api/items',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name: newItem })
+        })
+        const data = await res.json();
+        setItems([...items,data])
+        setNewItem("");
+    }
     return (
         <div>
-            {message}
+            <h1>Items</h1>
+            <ul>
+                {items.map((item)=>(<li key={item.id}>{item.name}</li>))}
+            </ul>
+           <form onSubmit={handleSubmit}>
+               <input value={newItem}type='text' onChange={(e)=>setNewItem(e.target.value)} placeholder='Add a new item'
+               />
+               <button type='submit'>Add new text</button>
+           </form>
         </div>
-    );
+    )
 }
+export default App;
