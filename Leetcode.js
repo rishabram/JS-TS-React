@@ -281,13 +281,25 @@ var createCounter = function(init) {
 
     
 };
-
-/** Leetcode 2665. Counter II
- * const counter = createCounter(5)
- * counter.increment(); // 6
- * counter.reset(); // 5
- * counter.decrement(); // 4
+/** Leetcode 2677 Chunk Array
+ * @param {Array} arr
+ * @param {number} size
+ * @return {Array}
+ I was stuck on this for a while because I forgot the end index for splice isnt inclusive so it would work
  */
+var chunk = function(arr, size) {
+    len = arr.length
+    answer=[]
+    if (len===0){
+        return answer
+    }
+        arrSize=[size]
+        for (let i  =0;i<len;i+=size){
+            answer.push(arr.slice(i,i+size))
+            
+        }   
+    return answer
+};
 
 
 
