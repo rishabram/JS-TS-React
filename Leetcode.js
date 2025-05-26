@@ -327,12 +327,46 @@ ArrayWrapper.prototype.toString = function() {
     
 }
 
-/**
+/** Leetcode 2704. To Be Or Not To Be
  * const obj1 = new ArrayWrapper([1,2]);
  * const obj2 = new ArrayWrapper([3,4]);
  * obj1 + obj2; // 10
  * String(obj1); // "[1,2]"
  * String(obj2); // "[3,4]"
+ * Solved using a new way i learnt to create objects in a function
+ */
+
+/**
+ * @param {string} val
+ * @return {Object}
+ */
+
+
+var expect = function(val) {
+    return({
+            toBe: function(value) {
+                if (val === value) {
+                    return true
+                } else throw new Error("Not Equal");
+            },
+            notToBe: function(value){
+                if (val !== value){
+                    return true
+                }
+                else throw new Error("Not Equal");
+            }
+
+        }
+
+    )
+
+};
+
+
+
+/**
+ * expect(5).toBe(5); // true
+ * expect(5).notToBe(5); // throws "Equal"
  */
 
 
