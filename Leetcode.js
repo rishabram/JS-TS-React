@@ -410,5 +410,23 @@ return function(){
  *  }, maxT + 15)
  */
 
+ /** Leetcode 2723. Add Two Promises
+ * @param {Promise} promise1
+ * @param {Promise} promise2
+ * @return {Promise}
+ Solved with promise chaining
+ */
+ var addTwoPromises = async function(promise1, promise2) {
+    let sum = 0
+    sum = promise1.then((value1)=>{return promise2.then((value2)=>{return value1+value2;})})
+    return sum
+};
+
+
+/**
+ * addTwoPromises(Promise.resolve(2), Promise.resolve(2))
+ *   .then(console.log); // 4
+ */
+
 
 
