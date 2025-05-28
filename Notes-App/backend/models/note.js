@@ -19,7 +19,7 @@ const create = async (noteData)=>{
 
 const update = async(id,noteData)=>{
     const updatedNote = await getDB().collection('notes').findOneAndUpdate({_id: new ObjectId(id)}, { $set : { ...noteData, updatedAt: new Date() } },{ returnDocument : 'after' });
-    return updatedNote.value || updatedNote;
+    return updatedNote;
 }
 
 const remove = async(id)=>{
