@@ -264,7 +264,8 @@ var fibGenerator = function*() {
 
 /** Leetcode 2665. Counter II
  * @param {integer} init
- * @return { increment: Function, decrement: Function, reset: Function }
+ * @return { increment: Function, decrement: Function, reset: Function }\
+ I learnt the difference between pre and post incremeneting where pre incrementing uses the new value but post incrementing uses the current value
  */
 var createCounter = function(init) {
     let start = init
