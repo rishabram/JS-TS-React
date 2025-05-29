@@ -424,10 +424,22 @@ return function(){
 };
 
 
-/**
+/** Leetcode 2724. Sort By
  * addTwoPromises(Promise.resolve(2), Promise.resolve(2))
  *   .then(console.log); // 4
+ It seems kinda simple just using the sort function but when passing a function to it and comparing the values its important to understand how the sort function uses the compare function fna - fnb to sort so if its negative then a is before 0 ,0 means its in the right place and if it positive then b is smaller than a and should come before
  */
+
+/**
+ * @param {Array} arr
+ * @param {Function} fn
+ * @return {Array}
+ */
+var sortBy = function(arr, fn) {
+   
+    return arr.sort((a,b)=>fn(a)-fn(b))
+  
+};
 
 
 
