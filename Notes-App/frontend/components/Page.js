@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { useNotes } from '../context/NotesContext'
 
 export default function Page(){
-    const { currentNote, saveNote, deleteNote } = useNotes();
+    const { currentNote, autoSaveNote, deleteNote } = useNotes();
     const [editedNote,setEditedNote] = useState({title: '', content: ''})
 
     useEffect(()=>{
@@ -13,23 +13,38 @@ export default function Page(){
             setEditedNote({title: '', content: ''})
         }
     },[currentNote])
-    const handleSave = () =>{
-        if (currentNote){
-            saveNote({...currentNote,title:editedNote.title,content:editedNote.content})
-        }
-    }
+
     if (!currentNote) {
-        return <div>Select a note or create a new one</div>
+        return
+        <div className="flex-1 flex items-center justify-center">
+            Select a note or create a new one
+        </div>
     }
 
     return(
-        <div className='page'>
-            <input value={editedNote.title} onChange={(e)=>setEditedNote({...editedNote,title:e.target.value})}/>
-            <button onClick={handleSave}>Save</button>
-            <button onClick={()=>deleteNote(currentNote._id)}>Delete</button>
+        <div className="p-4 flex-1 flex flex-col">
+            <div className="flex mb-4">
+            <input value={editedNote.title} onChange={(e)=>{
+                const newTitle = e.target.value;
+                setEditedNote(prev => ({...prev, title: newTitle}));
+                if (currentNote){
+                    autoSaveNote({...currentNote, title: newTitle, content: editedNote.content})
+                }
+            }} className="p-2 flex-1 border-b"
+            />
+            <button onClick={()=>deleteNote(currentNote._id)} className="bg-red-500 text-white p-2 ml-2 rounded"
+            >Delete</button>
+            </div>
             <textarea
                 value={editedNote.content}
-                onChange={(e)=>setEditedNote({...editedNote,content:e.target.value})}
+                onChange={(e) => {
+                    const newContent = e.target.value;
+                    setEditedNote(prev => ({...prev, content: newContent}));
+                    if (currentNote) {
+                        autoSaveNote({...currentNote, title: editedNote.title, content: newContent});
+                    }
+                }} className="flex-1 p-2 border rounded"
+
             />
         </div>
     )
