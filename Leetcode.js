@@ -425,21 +425,88 @@ return function(){
 
 
 /** Leetcode 2724. Sort By
- * addTwoPromises(Promise.resolve(2), Promise.resolve(2))
- *   .then(console.log); // 4
  It seems kinda simple just using the sort function but when passing a function to it and comparing the values its important to understand how the sort function uses the compare function fna - fnb to sort so if its negative then a is before 0 ,0 means its in the right place and if it positive then b is smaller than a and should come before
  */
 
-/**
- * @param {Array} arr
- * @param {Function} fn
- * @return {Array}
- */
 var sortBy = function(arr, fn) {
    
     return arr.sort((a,b)=>fn(a)-fn(b))
   
 };
+
+
+/** Leetcode 2726. Calculator with Method Chaining
+ * @param {Array} arr
+ * @param {Function} fn
+ * @return {Array}
+ Was able to figure it out with instance variables
+ */
+class Calculator {
+        /**
+         * @param {number} value
+         */
+        constructor(value) {
+            this.result = value;
+        }
+
+        /**
+         * @param {number} value
+         * @return {Calculator}
+         */
+        add(value){
+            this.result+=value
+            return this
+
+
+        }
+
+        /**
+         * @param {number} value
+         * @return {Calculator}
+         */
+        subtract(value){
+             this.result -= value
+            return this
+        }
+
+        /**
+         * @param {number} value
+         * @return {Calculator}
+         */
+        multiply(value) {
+             this.result *= value
+            return this
+
+        }
+
+        /**
+         * @param {number} value
+         * @return {Calculator}
+         */
+        divide(value) {
+            if (value===0){
+                throw new Error("Division by zero is not allowed");   
+            }
+            else{ this.result /= value
+            return this}
+        }
+        /**
+         * @param {number} value
+         * @return {Calculator}
+         */
+        power(value) {
+             this.result = Math.pow(this.result,value)
+            return this
+
+        }
+
+        /**
+         * @return {number}
+         */
+        getResult() {
+            return this.result
+        }
+    }
 
 
 
