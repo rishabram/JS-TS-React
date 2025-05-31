@@ -520,6 +520,26 @@ var isEmpty = function(obj) {
     else return false;
     
 };
+/** Leetcode 2627 
+ * @param {Function} fn
+ * @param {number} t milliseconds
+ * @return {Function}
+ I was able to figure it out it was simialr to the implmenation i used in my note book app but i didnt need to use useRef bc it didnt need to save between render but it is essentially the same function
+ */
+var debounce = function(fn, t) {
+    let timer;
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(()=>{fn(...args)},t)
+    }
+};
+
+/**
+ * const log = debounce(console.log, 100);
+ * log('Hello'); // cancelled
+ * log('Hello'); // cancelled
+ * log('Hello'); // Logged at t=100ms
+ */
 
 
 
