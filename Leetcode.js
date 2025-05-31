@@ -508,5 +508,18 @@ class Calculator {
         }
     }
 
+/** Leetcode 2727. Is Object Empty
+ * @param {Object|Array} obj
+ * @return {boolean}
+ I read up about and revised over the Object.keys method but was initially stuck but realized i need to use .length for arrays too
+ */
+var isEmpty = function(obj) {
+    if (Object.keys(obj).length === 0){
+        return true;
+    }
+    else return false;
+    
+};
+
 
 
