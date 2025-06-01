@@ -534,12 +534,28 @@ var debounce = function(fn, t) {
     }
 };
 
-/**
+/** Leetcode 27 remove elements
  * const log = debounce(console.log, 100);
  * log('Hello'); // cancelled
  * log('Hello'); // cancelled
  * log('Hello'); // Logged at t=100ms
+ Its not too complicated all you have to do is essentially have 2 pointers where it one has the current elemnt and k has the last element that isnt val and it moves all the elements that arent the value to the front and in place and returns the number of non-val elements
  */
 
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+var removeElement = function(nums, val) {
+    let k =0 
+    for (let i =0;i<nums.length;i++){
+        if (nums[i]!==val){
+            nums[k]=nums[i]
+            k++
+        }}
+
+return k
+};
 
 
