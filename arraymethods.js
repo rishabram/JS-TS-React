@@ -190,4 +190,45 @@ for (const element of arrayEntries) {
     console.log(element);
 }
 
+Array.prototype.myEvery=function(fn){
+    for (let i= 0;i<this.length;i++){
+        if (i in this){
+
+            if(!fn.call(this,this[i],i)){
+
+            return false}
+        }
+
+    }
+    return true
+}/*
+const isBelowThreshold = (currentValue) => currentValue < 40;
+
+const array1 = [1, 30, 40, 29, 10, 13];
+console.log(array1.myEvery(isBelowThreshold));
+function isBigEnough(element, index, array) {
+    return element >= 10;
+}
+console.log([12, 5, 8, 130, 44].myEvery(isBigEnough));
+console.log([12, 15, 18, 130, 44].myEvery(isBigEnough));
+const isSubset = (array1, array2) =>
+    array2.myEvery((element) => array1.includes(element));
+console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 7, 6]));
+console.log(isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7]));
+console.log([1, , 3].myEvery((x) => x !== undefined));
+console.log([1, , 3].myEvery((x) => x !== undefined));
+const arrayLike = {
+    length: 3,
+    0: "a",
+    1: "b",
+    2: "c",
+    3: 345,
+};
+console.log(
+    Array.prototype.every.call(arrayLike, (x) => typeof x === "string"),
+);
+*/
+
+
+
 
