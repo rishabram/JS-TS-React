@@ -281,6 +281,50 @@ console.log(arr[1][0]); // 1
 console.log(arr[2][0]); // 1
 */
 
+Array.prototype.myFind=function(fn){
+    len=this.length
+    for (let i=0;i<len;i++){
+        if (i in this){
+
+            if(fn.call(this,this[i],i)){
+
+                return this[i];
+            }
+
+        }
+    }
+    return undefined
+}/*
+const array1 = [5, 12, 8, 130, 44];
+
+const found = array1.myFind((element) => element > 10);
+console.log(found);
+const inventory = [
+    { name: "apples", quantity: 2 },
+    { name: "bananas", quantity: 0 },
+    { name: "cherries", quantity: 5 },
+];
+
+function isCherries(fruit) {
+    return fruit.name === "cherries";
+}
+
+console.log(inventory.myFind(isCherries));
+function isPrime(element, index, array) {
+    let start = 2;
+    while (start <= Math.sqrt(element)) {
+        if (element % start++ < 1) {
+            return false;
+        }
+    }
+    return element > 1;
+}
+
+console.log([4, 6, 8, 12].myFind(isPrime)); // undefined, not found
+console.log([4, 5, 8, 12].myFind(isPrime)); // 5
+*/
+
+
 
 
 
