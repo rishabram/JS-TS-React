@@ -153,3 +153,41 @@ console.log([1, 2, 3, 4, 5].myCopyWithin(0, 3, 4));
 console.log([1, 2, 3, 4, 5].myCopyWithin(-2, -3, -1));
 
 
+Array.prototype.myEntries=function() {
+    let currIndex = 0
+    const arr = this
+    return {
+        [Symbol.iterator]() {
+            return this;
+        },
+        next() {
+            if (currIndex < arr.length) {
+                return {value: [currIndex, arr[currIndex++]],done:false}
+            } else {
+                return {value: undefined,done:true}
+            }
+
+        }
+    }
+}
+const array1 = ["a", "b", "c"];
+
+const iterator1 = array1.myEntries();
+
+console.log(iterator1.next().value);
+console.log(iterator1.next().value);
+const a = ["a", "b", "c"];
+
+for (const [index, element] of a.myEntries()) {
+    console.log(index, element);
+}
+const array = ["a", "b", "c"];
+const arrayEntries = array.myEntries();
+
+for (const element of arrayEntries) {
+    console.log(element);
+}for (const element of [, "a"].myEntries()) {
+    console.log(element);
+}
+
+
