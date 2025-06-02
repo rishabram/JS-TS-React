@@ -229,6 +229,60 @@ console.log(
 );
 */
 
+Array.prototype.myFill=function(value,start,end){
+    len=this.length
+
+        if (!end && start){
+        start = Math.max(0,Math.min(start<0 ? start+len :start,len))
+
+        end=this.length
+        for (let i=start;i<end;i++){
+            this[i]=value
+        }
+    }
+
+    else if(!end  && !start && (typeof start !== 'number' && isNaN(start)) || (typeof end !== 'number' && isNaN(end))){
+        for (let i=0;i<len;i++){
+            this[i]=value
+        }
+    }
+    else if (end && start){
+
+        start = Math.max(0,Math.min(start<0 ? start+len :start,len))
+        end = Math.max(0,Math.min(end<0 ? end+len :end,len))
+        for (let i=start;i<end;i++){
+            this[i]=value
+        }
+    }
+
+    return this
+}/*
+const array1 = [1, 2, 3, 4];
+console.log(array1.myFill(0, 2, 4));
+
+console.log(array1.myFill(5, 1));
+console.log(array1.myFill(6));
+console.log([1, 2, 3].myFill(4)); // [4, 4, 4]
+console.log([1, 2, 3].myFill(4, 1)); // [1, 4, 4]
+console.log([1, 2, 3].myFill(4, 1, 2)); // [1, 4, 3]
+console.log([1, 2, 3].myFill(4, 1, 1)); // [1, 2, 3]
+console.log([1, 2, 3].myFill(4, 3, 3)); // [1, 2, 3]
+console.log([1, 2, 3].myFill(4, -3, -2)); // [4, 2, 3]
+console.log([1, 2, 3].myFill(4, NaN, NaN)); // [1, 2, 3]
+console.log([1, 2, 3].myFill(4, 3, 5)); // [1, 2, 3]
+console.log(Array(3).myFill(4)); // [4, 4, 4]
+const arr = new Array(3);
+for (let i = 0; i < arr.length; i++) {
+    arr[i] = new Array(4).fill(1); // Creating an array of size 4 and filled of 1
+}
+arr[0][0] = 10;
+console.log(arr[0][0]); // 10
+console.log(arr[1][0]); // 1
+console.log(arr[2][0]); // 1
+*/
+
+
+
 
 
 
