@@ -232,7 +232,7 @@ console.log(
 Array.prototype.myFill=function(value,start,end){
     len=this.length
 
-        if (!end && start){
+        if (!end && start  &&  (typeof end !== 'number' && isNaN(end))){
         start = Math.max(0,Math.min(start<0 ? start+len :start,len))
 
         end=this.length
