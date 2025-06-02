@@ -467,6 +467,21 @@ function App() {
 export default App;
 
 
+// Added .at() method from array handling positive and negative indices and array out of bounds
+myAtArr = [59,2]
+Array.prototype.myAt= function(index){
+    if (index < 0) {
+        index = this.length + index;
+    }
+    if (index >= 0 && index < this.length) {
+        return this[index];
+    } else {
+        return undefined; 
+    }
+};
+console.log(myAtArr.myAt(0));
+console.log(myAtArr.myAt(-1));
+
 
 
 
