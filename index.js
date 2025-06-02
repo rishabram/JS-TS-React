@@ -483,6 +483,25 @@ console.log(myAtArr.myAt(0));
 console.log(myAtArr.myAt(-1));
 
 
+Array.prototype.myConcat = function(...args) {
+    const newArray = [...this];
+    for (let i = 0; i < args.length; i++) {
+        if (Array.isArray(args[i])) {
+            for (let j = 0; j < args[i].length; j++) {
+                newArray.push(args[i][j]);
+            }
+        } else {
+            newArray.push(args[i]);
+        }
+    }
+    return newArray;
+};
+
+const array2 = [3, 4];
+console.log(array1.myConcat(array2));
+console.log(array1.myConcat(3, 4)); 
+console.log(array1.myConcat(array2, 5, 6));
+
 
 
 
