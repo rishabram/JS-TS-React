@@ -4,7 +4,7 @@ Array.prototype.myFilter = function(callbackFn){
     for (let i=0;i<len;i++){
         if (i in this){
             if (callbackFn.call(this,this[i], i)){
-                filteredArr.push(this[i])
+
             }
         }
     }
@@ -145,13 +145,14 @@ Array.prototype.myCopyWithin=function(target,start,end){
     return this
 }
 
-const array1 = ["a", "b", "c", "d", "e"];
-console.log(array1.myCopyWithin(0, 3, 4));
-console.log(array1.myCopyWithin(1,3))
+/*
+const array2 = ["a", "b", "c", "d", "e"];
+console.log(array2.myCopyWithin(0, 3, 4));
+console.log(array2.myCopyWithin(1,3))
 console.log([1, 2, 3, 4, 5].myCopyWithin(0, 3));
 console.log([1, 2, 3, 4, 5].myCopyWithin(0, 3, 4));
 console.log([1, 2, 3, 4, 5].myCopyWithin(-2, -3, -1));
-
+*/
 
 Array.prototype.myEntries=function() {
     let currIndex = 0
@@ -170,15 +171,22 @@ Array.prototype.myEntries=function() {
         }
     }
 }
+
+Array.prototype.myEntriesYield=function*() {
+    for (let i=0;i<this.length;i++){
+        yield[i,this[i]]
+    }
+}
+/*
 const array1 = ["a", "b", "c"];
 
-const iterator1 = array1.myEntries();
+const iterator1 = array1.myEntriesYield();
 
 console.log(iterator1.next().value);
 console.log(iterator1.next().value);
 const a = ["a", "b", "c"];
 
-for (const [index, element] of a.myEntries()) {
+for (const [index, element] of a.myEntriesYield()) {
     console.log(index, element);
 }
 const array = ["a", "b", "c"];
@@ -188,8 +196,7 @@ for (const element of arrayEntries) {
     console.log(element);
 }for (const element of [, "a"].myEntries()) {
     console.log(element);
-}
-
+}*/
 Array.prototype.myEvery=function(fn){
     for (let i= 0;i<this.length;i++){
         if (i in this){
@@ -228,7 +235,6 @@ console.log(
     Array.prototype.every.call(arrayLike, (x) => typeof x === "string"),
 );
 */
-
 Array.prototype.myFill=function(value,start,end){
     len=this.length
 
@@ -256,7 +262,8 @@ Array.prototype.myFill=function(value,start,end){
     }
 
     return this
-}/*
+}
+/*
 const array1 = [1, 2, 3, 4];
 console.log(array1.myFill(0, 2, 4));
 
@@ -282,11 +289,11 @@ console.log(arr[2][0]); // 1
 */
 
 Array.prototype.myFind=function(fn){
-    len=this.length
+    const len=this.length
     for (let i=0;i<len;i++){
         if (i in this){
 
-            if(fn.call(this,this[i],i)){
+            if(fn.call(this,this[i],i,this)){
 
                 return this[i];
             }
@@ -324,18 +331,12 @@ console.log([4, 6, 8, 12].myFind(isPrime)); // undefined, not found
 console.log([4, 5, 8, 12].myFind(isPrime)); // 5
 */
 
-Array.prototype.myEntriesYield=function*() {
-    for (let i=0;i<this.length;i++){
-        yield[i,this[i]]
-    }
-}
-
 Array.prototype.myFindIndex=function(fn){
-    len=this.length
+    const len=this.length
     for (let i=0;i<len;i++){
         if (i in this){
 
-            if(fn.call(this,this[i],i)){
+            if(fn.call(this,this[i],i,this)){
 
                 return i
             }
@@ -364,11 +365,11 @@ function isPrime(element) {
 console.log([4, 6, 8, 9, 12].myFindIndex(isPrime)); // -1, not found
 console.log([4, 6, 7, 9, 12].myFindIndex(isPrime)); // 2 (array[2] is 7)*/
 Array.prototype.myFindLast=function(fn){
-    len=this.length
+    const len=this.length
     for (let i=len-1;i>=0;i--){
         if (i in this){
 
-            if(fn.call(this,this[i],i)){
+            if(fn.call(this,this[i],i,this)){
 
                 return this[i];
             }
@@ -400,8 +401,41 @@ function isPrime(element) {
     return true;}
 console.log([4, 6, 8, 12].findLast(isPrime)); // undefined, not found
 console.log([4, 5, 7, 8, 9, 11, 12].findLast(isPrime)); // 11*/
+Array.prototype.myFindLastIndex=function(fn){
+    const len=this.length
+    for (let i=len-1;i>=0;i--){
+        if (i in this){
 
+            if(fn.call(this,this[i],i,this)){
 
+                return i;
+            }
 
-
-
+        }
+    }
+    return -1;
+}
+/*
+const array1 = [5, 12, 50, 130, 44];
+const isLargeNumber = (element) => element > 45;
+console.log(array1.myFindLastIndex(isLargeNumber));
+function isPrime(element) {
+    if (element % 2 === 0 || element < 2) {
+        return false;}
+    for (let factor = 3; factor <= Math.sqrt(element); factor += 2) {
+        if (element % factor === 0) {
+            return false;}}
+    return true;}
+console.log([4, 6, 8, 12].myFindLastIndex(isPrime)); // -1, not found
+console.log([4, 5, 7, 8, 9, 11, 12].myFindLastIndex(isPrime)); // 5
+const numbers = [3, -1, 1, 4, 1, 5, 9, 2, 6];
+const lastTrough = numbers
+    .filter((num) => num > 0)
+    .myFindLastIndex((num, idx, arr) => {
+        // Without the arr argument, there's no way to easily access the
+        // intermediate array without saving it to a variable.
+        if (idx > 0 && num >= arr[idx - 1]) return false;
+        if (idx < arr.length - 1 && num >= arr[idx + 1]) return false;
+        return true;
+    });
+console.log(lastTrough); // 6*/
