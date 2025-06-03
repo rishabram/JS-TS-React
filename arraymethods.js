@@ -330,6 +330,39 @@ Array.prototype.myEntriesYield=function*() {
     }
 }
 
+Array.prototype.myFindIndex=function(fn){
+    len=this.length
+    for (let i=0;i<len;i++){
+        if (i in this){
+
+            if(fn.call(this,this[i],i)){
+
+                return i
+            }
+
+        }
+    }
+    return -1
+}/*
+const array1 = [5, 12, 8, 130, 44];
+
+const isLargeNumber = (element) => element > 13;
+
+console.log(array1.myFindIndex(isLargeNumber));
+function isPrime(element) {
+    if (element % 2 === 0 || element < 2) {
+        return false;
+    }
+    for (let factor = 3; factor <= Math.sqrt(element); factor += 2) {
+        if (element % factor === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+console.log([4, 6, 8, 9, 12].myFindIndex(isPrime)); // -1, not found
+console.log([4, 6, 7, 9, 12].myFindIndex(isPrime)); // 2 (array[2] is 7)*/
 
 
 
