@@ -324,6 +324,11 @@ console.log([4, 6, 8, 12].myFind(isPrime)); // undefined, not found
 console.log([4, 5, 8, 12].myFind(isPrime)); // 5
 */
 
+Array.prototype.myEntriesYield=function*() {
+    for (let i=0;i<this.length;i++){
+        yield[i,this[i]]
+    }
+}
 
 
 
