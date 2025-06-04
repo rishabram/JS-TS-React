@@ -494,4 +494,45 @@ const arrayLike = {
 console.log(Array.prototype.myFlat.call(arrayLike));
 // [ 1, 2, { '0': 3, '1': 4, length: 2 }, 5 ]
 */
+Array.prototype.myFlatMap = function(callbackFn){
+    const mappedArr = []
+    let currDepth=1
+    const len = this.length
+    for (let i=0; i<len; i++){
+        if (i in this){
+            if (callbackFn.call(this,this[i],i)){
+                mappedArr.push(callbackFn.call(this,this[i],i))
+            }
+        }
+    }
+    const flatArr = [];
+
+    for (let i = 0; i < mappedArr.length; i++) {
+
+        const element = mappedArr[i];
+
+        if (Array.isArray(element)) {
+
+            const innerLen = element.length;
+
+            for (let j = 0; j < innerLen; j++) {
+                flatArr.push(element[j])
+            }
+        }
+        else flatArr.push(element)
+    }
+    return flatArr
+}
+/*
+
+const arr1 = [1, 2, 1];
+
+const result = arr1.myFlatMap((num) => (num === 2 ? [2, 2] : 1));
+console.log(result);
+console.log([1, 2].myFlatMap(n => [n, n]));
+console.log([1, , 3].myFlatMap(n => [n]));
+console.log([1, 2].myFlatMap(n => n < 2 ? [] : [n]));
+const arr = [1, 2, 3, 4];
+
+console.log(arr.myFlatMap((x) => [x, x * 2]));*/
 
