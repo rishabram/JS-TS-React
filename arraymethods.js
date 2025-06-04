@@ -439,3 +439,59 @@ const lastTrough = numbers
         return true;
     });
 console.log(lastTrough); // 6*/
+
+Array.prototype.myFlat=function(depth){
+    if (!depth){
+        currDepth=1
+    }
+    else{
+    currDepth=depth }
+    if (depth<=0){
+        currDepth=0
+    }
+    const flatArr=[]
+    const len=this.length
+    for (let i=0;i<len;i++){
+        element=this[i]
+        if (i in this){
+            if (Array.isArray(element) && currDepth>0){
+                currDepth-=1
+                const flattened=element.myFlat(currDepth);
+
+            for (let j = 0; j < flattened.length; j++) {
+
+                flatArr.push(flattened[j]);}
+
+            }
+            else{
+
+                flatArr.push(element)}
+
+            }
+        }
+    return flatArr}/*
+const arr5 = [1, 2, , 4, 5];
+console.log(arr5.myFlat()); // [1, 2, 4, 5]
+const array = [1, , 3, ["a", , "c"]];
+console.log(array.myFlat()); // [ 1, 3, "a", "c" ]
+console.log([1, [2]].myFlat());
+console.log([1, [2, [3]]].myFlat(1))
+console.log([1, [2, [3]]].myFlat(2))
+const arr4 = [1, 2, [3, 4, [5, 6, [7, 8, [9, 10]]]]];
+console.log(arr4.myFlat(Infinity));
+// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const array2 = [1, , 3, undefined, ["a", , ["d", , "e"]], null];
+console.log(array2.myFlat()); // [ 1, 3, undefined, "a", ["d", empty, "e"], null ]
+console.log(array2.myFlat(2)); // [ 1, 3, undefined, "a", "d", "e", null ]
+const arrayLike = {
+    length: 3,
+    0: [1, 2],
+    // Array-like objects aren't flattened
+    1: { length: 2, 0: 3, 1: 4 },
+    2: 5,
+    3: 3, // ignored by flat() since length is 3
+};
+console.log(Array.prototype.myFlat.call(arrayLike));
+// [ 1, 2, { '0': 3, '1': 4, length: 2 }, 5 ]
+*/
+
