@@ -536,3 +536,24 @@ const arr = [1, 2, 3, 4];
 
 console.log(arr.myFlatMap((x) => [x, x * 2]));*/
 
+Array.prototype.myForEach = function(fn){
+    const len = this.length
+    for (let i=0; i<len; i++){
+        if (i in this){
+            fn.call(this,this[i],i)
+        }}
+}
+/*
+const array1 = ["a", "b", "c"];
+array1.myForEach((element) => console.log(element));
+const ratings = [5, 4, 5];
+let sum = 0;
+const sumFunction = async (a, b) => a + b;
+ratings.myForEach(async (rating) => {
+    sum = await sumFunction(sum, rating);
+});
+
+console.log(sum);*/
+
+
+
