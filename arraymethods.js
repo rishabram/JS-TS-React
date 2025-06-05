@@ -561,50 +561,39 @@ console.log(sum);*/
  *     this.next = (next===undefined ? null : next)
  * }
  */
-/**
- * @param {ListNode} head
- * @return {ListNode}
- */
-var deleteDuplicates = function(head) {
-    let res=head;
-  
-   while (head && head.next){
-    if (head.val === head.next.val){
-        head.next=head.next.next
-    } 
-    else{
-        head=head.next
-    }
-   }
-    return res
-};
-/** Leetcode 88. Merge Sorted Array
- * @param {number[]} nums1
- * @param {number} m
- * @param {number[]} nums2
- * @param {number} n
- * @return {void} Do not return anything, modify nums1 in-place instead.
- */
-var merge = function(nums1, m, nums2, n) {
-        p1=m-1
-        p2=n-1
-        p=m+n-1
-            while (p1>=0&&p2>=0){
-                if (nums1[p1]>nums2[p2]){
-                    nums1[p]=nums1[p1]
-                    p1--
-                }
-        else{
-            nums1[p]=nums2[p2]
-            p2--
-              }
-            p--
-            }
-        while (p2>=0){
-        nums1[p]=nums2[p2]
-            p2--
-             p--
-              }};
 
+Array.prototype.myIncludes= function(element,index){
+    len=this.length
+    if (index){
+        index = Math.max(0,Math.min(index<0 ? index+len :index,len))
+        for (let i = index;i<len;i++){
+            if (i in this){
+                if(isNaN(this[i])){
+                    return false;
+                }
+                if (this[i]===element){
+                    return true
+                }
+            }
+        }
+    }
+    else {
+        for (let i = 0; i < len; i++) {
+            if (i in this) {
+                if (this[i] === element) {
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
+   /* console.log([1, 2, 3].myIncludes(4)) // false);
+    console.log([1, 2, 3].myIncludes(2)); // true
+    console.log([1, 2, 3].myIncludes(3, 3));//false
+    console.log(    [1, 2, 3].myIncludes(3, -1)); // true
+    console.log([1, 2, NaN].myIncludes(NaN)); // true
+    console.log(["1", "2", "3"].myIncludes(3));// false
+*/
 
 
