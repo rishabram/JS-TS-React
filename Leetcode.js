@@ -557,5 +557,51 @@ var removeElement = function(nums, val) {
 
 return k
 };
+/**
+ * @param {ListNode} head
+ * @return {ListNode}
+ */
+var deleteDuplicates = function(head) {
+    let res=head;
+  
+   while (head && head.next){
+    if (head.val === head.next.val){
+        head.next=head.next.next
+    } 
+    else{
+        head=head.next
+    }
+   }
+    return res
+};
+/** Leetcode 88. Merge Sorted Array
+ * @param {number[]} nums1
+ * @param {number} m
+ * @param {number[]} nums2
+ * @param {number} n
+ * @return {void} Do not return anything, modify nums1 in-place instead.
+ */
+var merge = function(nums1, m, nums2, n) {
+        p1=m-1
+        p2=n-1
+        p=m+n-1
+            while (p1>=0&&p2>=0){
+                if (nums1[p1]>nums2[p2]){
+                    nums1[p]=nums1[p1]
+                    p1--
+                }
+        else{
+            nums1[p]=nums2[p2]
+            p2--
+              }
+            p--
+            }
+        while (p2>=0){
+        nums1[p]=nums2[p2]
+            p2--
+             p--
+              }};
+
+
 
 
