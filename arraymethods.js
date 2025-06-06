@@ -598,3 +598,58 @@ Array.prototype.myIncludes= function(element,index){
     console.log(["1", "2", "3"].myIncludes(3));// false
 */
 
+Array.prototype.myIndexOf= function(element,index){
+    len=this.length
+    if (index){
+        index = Math.max(0,Math.min(index<0 ? index+len :index,len))
+        for (let i = index;i<len;i++){
+            if (i in this){
+                if (this[i]===element){
+                    return i
+                }
+            }
+        }
+    }
+    else {
+        for (let i = 0; i < len; i++) {
+            if (i in this){
+                if (this[i]===element){
+                    return i
+                }
+            }
+        }
+    }
+    return -1
+}/*
+const array = [2, 9, 9];
+ console.log(array.myIndexOf(2))//0
+ console.log(array.myIndexOf(7)) // -1);
+ console.log(array.myIndexOf(9, 2));//2
+console.log(array.myIndexOf(2, -1));//-1
+console.log(array.myIndexOf(2, -3));//0
+console.log(array.myIndexOf(NaN));
+const indices = [];
+const array1 = ["a", "b", "a", "c", "a", "d"];
+const element = "a";
+let idx = array1.myIndexOf(element);
+while (idx !== -1) {
+    indices.push(idx);
+    idx = array1.myIndexOf(element, idx + 1);
+}
+console.log(indices);
+// [0, 2, 4]
+function updateVegetablesCollection(veggies, veggie) {
+    if (veggies.myIndexOf(veggie) === -1) {
+        veggies.push(veggie);
+        console.log(`New veggies collection is: ${veggies}`);
+    } else {
+        console.log(`${veggie} already exists in the veggies collection.`);
+    }
+}
+const veggies = ["potato", "tomato", "chillies", "green-pepper"];
+updateVegetablesCollection(veggies, "spinach");
+// New veggies collection is: potato,tomato,chillies,green-pepper,spinach
+updateVegetablesCollection(veggies, "spinach");
+// spinach already exists in the veggies collection.
+*/
+
