@@ -561,15 +561,14 @@ console.log(sum);*/
  *     this.next = (next===undefined ? null : next)
  * }
  */
-
 Array.prototype.myIncludes= function(element,index){
     len=this.length
     if (index){
         index = Math.max(0,Math.min(index<0 ? index+len :index,len))
         for (let i = index;i<len;i++){
             if (i in this){
-                if(isNaN(this[i])){
-                    return false;
+                if(isNaN(this[i])&&isNaN(element)){
+                    return true;
                 }
                 if (this[i]===element){
                     return true
@@ -579,8 +578,11 @@ Array.prototype.myIncludes= function(element,index){
     }
     else {
         for (let i = 0; i < len; i++) {
-            if (i in this) {
-                if (this[i] === element) {
+            if (i in this){
+                if(isNaN(this[i])&&isNaN(element)){
+                    return true;
+                }
+                if (this[i]===element){
                     return true
                 }
             }
@@ -595,5 +597,4 @@ Array.prototype.myIncludes= function(element,index){
     console.log([1, 2, NaN].myIncludes(NaN)); // true
     console.log(["1", "2", "3"].myIncludes(3));// false
 */
-
 
