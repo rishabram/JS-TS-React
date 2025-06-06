@@ -652,4 +652,50 @@ updateVegetablesCollection(veggies, "spinach");
 updateVegetablesCollection(veggies, "spinach");
 // spinach already exists in the veggies collection.
 */
+Array.prototype.myJoin=function(separator){
+    let joined ='';
+    for (let i =0;i<this.length;i++){
+        if(!this[i] || this[i]===undefined){
+            joined=joined+""+","
+            continue
+        }
+        if (!separator && separator!==""){
+            separator=','
+        }
+        if (i===0 || separator===""){
+            joined=joined+this[i];
+        }
+        else {
+        joined=joined+separator+this[i];
+        }
+
+    }
+    return joined
+}/*
+const elements = ["Fire", "Air", "Water"];
+console.log(elements.myJoin());
+console.log(elements.myJoin(""));// Expected output: "FireAirWater"
+console.log(elements.myJoin("-"));// Expected output: "Fire-Air-Water"
+const matrix = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+];console.log(matrix.myJoin()); // 1,2,3,4,5,6,7,8,9
+console.log(matrix.myJoin(";"));
+const arr = [];
+arr.push(1, [3, arr, 4], 2);
+console.log(arr.myJoin(";")); // 1;3,,4;2
+console.log([1, , 3].myJoin()); // '1,,3'
+console.log([1, undefined, 3].myJoin()); // '1,,3'
+const arrayLike = {
+    length: 3,
+    0: 2,
+    1: 3,
+    2: 4,
+    3: 5, // ignored by join() since length is 3
+};
+console.log(Array.prototype.myJoin.call(arrayLike));// 2,3,4
+console.log(Array.prototype.myJoin.call(arrayLike, "."));// 2.3.4
+*/
+
 
