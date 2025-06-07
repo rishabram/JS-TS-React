@@ -712,4 +712,52 @@ const arr = ["a", , "c"];
 const denseKeys = [...arr.myKey()];
 console.log(denseKeys); // [0, 1, 2]*/
 
+Array.prototype.myLastIndexOf=function(element,index){
+    len=this.length
+    if (index){
+        index = Math.max(0,Math.min(index<0 ? index+len :index,len))
+        for (let i = index;  i>=0; i--) {
+            if (i in this){
+                if (this[i]===element){
+                    return i
+                }
+            }
+        }
+    }
+    else {
+        for (let i = len-1;  i>=0; i--) {
+            if (i in this){
+                if (this[i]===element){
+                    return i
+                }
+            }
+        }
+    }
+    return -1
+}
+/*
+const numbers = [2, 5, 9, 2]
+const array = [NaN];
+console.log(
+numbers.myLastIndexOf(2), // 3
+numbers.myLastIndexOf(7), // -1
+numbers.myLastIndexOf(2, 3), // 3
+numbers.myLastIndexOf(2, 2),// 0
+numbers.myLastIndexOf(2, -2), // 0
+numbers.myLastIndexOf(2, -1),// 3
+array.myLastIndexOf(NaN) // -1
+)
+const indices = [];
+const array1 = ["a", "b", "a", "c", "a", "d"];
+const element1 = "a";
+let idx = array1.myLastIndexOf(element1);
+while (idx !== -1) {
+    indices.push(idx);
+    idx = idx > 0 ? array1.myLastIndexOf(element1, idx - 1) : -1;
+}console.log(indices);// [4, 2, 0]
+console.log([1, , 3].myLastIndexOf(undefined)); // -1
+
+
+
+
 
