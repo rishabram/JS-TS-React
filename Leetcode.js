@@ -602,6 +602,24 @@ var merge = function(nums1, m, nums2, n) {
              p--
               }};
 
-
+/** Leetcode 121. Best Time to Buy and Sell Stock
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+    let maxProfit=0;
+    let maxPrice=0;
+    for (let i=prices.length-1;i>=0;i--){
+       if (prices[i]>maxPrice){
+        maxPrice=prices[i];
+       }
+       
+      if (maxPrice-prices[i]>maxProfit){
+        maxProfit=maxPrice-prices[i]
+      }
+    }
+    return maxProfit
+    
+};
 
 
