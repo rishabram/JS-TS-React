@@ -697,5 +697,19 @@ const arrayLike = {
 console.log(Array.prototype.myJoin.call(arrayLike));// 2,3,4
 console.log(Array.prototype.myJoin.call(arrayLike, "."));// 2.3.4
 */
+Array.prototype.myKey=function*(){
+    for (let i=0;i<this.length;i++){
+        yield i
+    }
+}/*
+const array1 = ["a", ,"b", "c"];
+const iterator = array1.myKey();
+
+for (const key of iterator) {
+    console.log(key);
+}
+const arr = ["a", , "c"];
+const denseKeys = [...arr.myKey()];
+console.log(denseKeys); // [0, 1, 2]*/
 
 
