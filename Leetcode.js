@@ -647,8 +647,8 @@ var inorderTraversal = function(root) {
     inorder(root)
     return res
     
-}; 
-/** Leetcode 94. Binary Tree Inorder Traversal
+};
+/** Leetcode 100 isSameTree
  * Definition for a binary tree node.
  * function TreeNode(val, left, right) {
  *     this.val = (val===undefined ? 0 : val)
@@ -657,21 +657,17 @@ var inorderTraversal = function(root) {
  * }
  */
 /**
- * @param {TreeNode} root
- * @return {number[]}
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {boolean}
  */
-var inorderTraversal = function(root) {
-    const res=[]
-    function inorder(node){
-        if (!node){
-            return
-        }
-        inorder(node.left)
-        res.push(node.val)
-        inorder(node.right)
-
+var isSameTree = function(p, q) {
+    if (!p && !q){
+        return true
     }
-    inorder(root)
-    return res
+    if ((!p || !q) || p.val!==q.val){
+        return false
+    }
+    return (isSameTree(p.left,q.left)&&isSameTree(p.right,q.right))
     
 };
