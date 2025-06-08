@@ -791,6 +791,21 @@ collection.addElements(10, 20, 30);
 console.log(collection.length); // 3
 collection.removeElement();
 con*!/sole.log(collection.length); // 2*/
+Array.prototype.myPush=function(...elements){
+    for (let i=0;i<elements.length;i++){
+        this[this.length]=elements[i];
+    }
+return this.length
+}
+/*
+/!*const sports = ["soccer", "baseball"];
+const total = sports.myPush("football", "swimming");
+console.log(sports); // ['soccer', 'baseball', 'football', 'swimming']
+console.log(total); // 4
+const vegetables = ["parsnip", "potato"];
+const moreVegs = ["celery", "beetroot"]; // Merge the second array into the first one
+vegetables.myPush(...moreVegs);
+console.log(*!/vegetables);*/
 
 
 
