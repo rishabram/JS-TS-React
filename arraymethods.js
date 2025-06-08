@@ -756,6 +756,42 @@ while (idx !== -1) {
     idx = idx > 0 ? array1.myLastIndexOf(element1, idx - 1) : -1;
 }console.log(indices);// [4, 2, 0]
 console.log([1, , 3].myLastIndexOf(undefined)); // -1
+*/
+
+Array.prototype.myPop=function(){
+    if (!this.length){
+        return undefined
+    }
+    let last=this[this.length-1]
+    this.length=this.length-1;
+    return last
+}/*
+/!*const myFish = ["angel", "clown", "mandarin", "sturgeon"];
+const popped = myFish.myPop();
+console.log(myFish); // ['angel', 'clown', 'mandarin' ]
+console.log(popped); // 'sturgeon'
+const arrayLike = {
+    length: 3,
+    unrelated: "foo",
+    2: 4,
+};
+console.log(Array.prototype.myPop.call(arrayLike));// 4
+console.log(arrayLike);// { length: 2, unrelated: 'foo' }
+const plainObj = {};// There's no length property, so the length is 0
+Array.prototype.myPop.call(plainObj);
+console.log(plainObj);
+const collection = {
+    length: 0,
+    addElements(...elements) {
+        return [].push.call(this, ...elements);},
+    removeElement() {
+        return [].myPop.call(this);
+    },};
+collection.addElements(10, 20, 30);
+console.log(collection.length); // 3
+collection.removeElement();
+con*!/sole.log(collection.length); // 2*/
+
 
 
 
