@@ -671,3 +671,28 @@ var isSameTree = function(p, q) {
     return (isSameTree(p.left,q.left)&&isSameTree(p.right,q.right))
     
 };
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {boolean}
+ */
+var isSymmetric = function(root) {
+
+    function mirror(n1,n2){
+        if (!n1 && !n2){
+            return true
+        }
+        if (!n1 || !n2){
+            return false
+        }
+        return (mirror(n1.left,n2.right) && mirror(n1.right,n2.left)&&(n2.val===n1.val))
+    }
+    return mirror(root.right,root.left)
+};
