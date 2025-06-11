@@ -724,3 +724,11 @@ var containsDuplicate = function(nums) {
     const numSet = new Set(nums);
     return nums.length !== numSet.size ? true : false
 };
+/** Leetcode 242. Valid Anagram
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram = function(s, t) {
+return s.split('').sort().join('')===t.split('').sort().join('')
+};
