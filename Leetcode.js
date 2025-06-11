@@ -716,3 +716,11 @@ var maxDepth = function(root) {
         return 1 + Math.max(maxDepth(root.left),maxDepth(root.right))
     }
 };
+/** Leetcode 217. Contains Duplicate
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+var containsDuplicate = function(nums) {
+    const numSet = new Set(nums);
+    return nums.length !== numSet.size ? true : false
+};
