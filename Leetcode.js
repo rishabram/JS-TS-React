@@ -752,10 +752,18 @@ return s.split('').sort().join('')===t.split('').sort().join('')
         }
         else {
             right--
+        }}}
+// Leetcode 1 Two Sum
+var twoSum = function(nums, target) {
+    elements= new Map();
+    for (let i=0;i<nums.length;i++){
+        let needed= target-nums[i]
+        if (elements.has(needed)){
+            return [i,elements.get(needed)]
         }
-        
-    }
-   
+        elements.set(nums[i],i)
 
-}
+    }
+};
+
 
