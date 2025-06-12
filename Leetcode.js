@@ -765,5 +765,29 @@ var twoSum = function(nums, target) {
 
     }
 };
-
+/**
+ * @param {string} s
+ * @return {boolean}
+ */
+ var isValid = function(s) {
+    opening=["(","[","{"]
+    const map= [["}","{"],
+        ["]","["],
+        [")","("]]
+    const match=new Map(map);
+    let stack=[]
+    for(let i=0;i<s.length;i++){
+        if (opening.includes(s.at(i))){
+            stack.push(s.at(i))
+        }
+        else{
+            if (match.get(s.at(i))===stack[stack.length-1]){
+                stack.pop()
+            }
+            else{return false}
+        }
+    }
+    return true
+};
+ 
 
