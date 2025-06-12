@@ -808,6 +808,64 @@ vegetables.myPush(...moreVegs);
 console.log(*!/vegetables);*/
 
 
+    
+Array.prototype.myReduce=function(fn,initial){
+        if (!this){
+            throw new TypeError("Error");
+        }
+        let accumulator;
+        let startIndex;
+        if (!initial){
+            accumulator=this[0]
+            startIndex=1}
+
+            else{
+                accumulator=initial
+                startIndex=0
+            }
+            for (let i=startIndex;i<this.length;i++){
+                accumulator = fn(accumulator, this[i], i, this)
+            }
+            return accumulator
+        }
+const array1 = [1, 2, 3, 4];
+/*
+
+// 0 + 1 + 2 + 3 + 4
+const initialValue = 0;
+const sumWithInitial = array1.myReduce(
+    (accumulator, currentValue) => accumulator + currentValue,
+    initialValue,
+);
+/!*
+
+console.log(sumWithInitial);// Expected output: 10
+const objects = [{ x: 1 }, { x: 2 }, { x: 3 }];
+const pipe =
+    (...functions) =>
+        (initialValue) =>
+            functions.myReduce((acc, fn) => fn(acc), initialValue);
+
+// Building blocks to use for composition
+const double = (x) => 2 * x;
+const triple = (x) => 3 * x;
+const quadruple = (x) => 4 * x;
+
+// Composed functions for multiplication of specific values
+const multiply6 = pipe(double, triple);
+const multiply9 = pipe(triple, triple);
+const multiply16 = pipe(quadruple, quadruple);
+const multiply24 = pipe(double, triple, quadruple);
+
+// Usage
+console.log(multiply6(6)); // 36
+console.log(multiply9(9)); // 81
+console.log(multiply16(16)); // 256
+console.log(multiply24(10)); // 240*!/
+*/
+
+
+
 
 
 
