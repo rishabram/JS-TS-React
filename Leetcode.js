@@ -812,5 +812,29 @@ var reverseList = function(head) {
 
     
 };
- 
+ /**
+ * @param {number[]} arr
+ * @return {number}
+ */
+
+var numOfSubarrays = function(arr) {
+    let odd=0;let even=1;
+    let mod=1000000007
+    let totalSubArray=0;
+    let currentSum=0
+
+    for (const num of arr){
+        currentSum+=num
+        if (currentSum%2===0){
+            totalSubArray+=odd
+            even++
+        }
+        else{
+            totalSubArray+=even
+            odd++
+        }
+    }
+return totalSubArray%mod
+};
+
 
