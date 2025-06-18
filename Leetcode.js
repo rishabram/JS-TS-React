@@ -836,5 +836,18 @@ var numOfSubarrays = function(arr) {
     }
 return totalSubArray%mod
 };
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var reverseWords = function(s) {
+    const reverseWords = s.split(" ");
+    const res = []
+    for (let i=reverseWords.length-1;i>=0;i--){
+        if (reverseWords[i]){
+        res.push(reverseWords[i])}
+    }
+    return res.join(" ")
+};
 
 
