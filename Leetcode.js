@@ -850,4 +850,54 @@ var reverseWords = function(s) {
     return res.join(" ")
 };
 
+///Leetcode 200 Number of Islands 
+/**
+ * @param {character[][]} grid
+ * @return {number}
+ */
+var numIslands = function(grid) {
+    
+    if(!grid){
+        return 0
+    }
+     let rows= grid.length
+    let cols= grid[0].length
+    let visited = new Set();
+    let islands=0
+     function bfs(r,c){
+        let q = []
+        visited.add(`${r},${c}`)
+        q.push([r,c])
+         const directions = [
+  { dr: 0, dc: 1 }, 
+  { dr: 1, dc: 0 }, 
+  { dr: 0, dc: -1 },
+  { dr: -1, dc: 0 } 
+];
+    while (q.length>0){
+        const [row,col]= q.shift()
+    
+        for (const dir of directions) {
+        let newRow = row+dir.dr;
+        let newCol = col+dir.dc;
+        if(newRow>= 0 && newRow<rows && newCol >=0 && newCol<cols &&        grid [newRow][newCol]==='1'&& !visited.has(`${newRow},${newCol}`)){
+            visited.add(`${newRow},${newCol}`)
+            q.push([newRow,newCol])
+        } 
+    }
+  }
+    for (let r =0;r<rows;r++){
+        for (let c = 0;c<cols;c++){
+             if (grid[r][c]==='1' && !visited.has(`${r},${c}`)){
+                bfs(r,c)
+                islands+=1
+             }
+             visited.add(`${r},${c}`)
+        }
+    }
+   
+    return islands
+
+};
+
 
