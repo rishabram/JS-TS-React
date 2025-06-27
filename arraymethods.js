@@ -864,6 +864,56 @@ console.log(multiply16(16)); // 256
 console.log(multiply24(10)); // 240*!/
 */
 
+Array.prototype.myReduceRight=function(fn,initial){
+    if (!this){
+        throw new TypeError("Error");
+    }
+    let accumulator;
+    let startIndex;
+    if (!initial){
+        accumulator=this[this.length-1]
+        startIndex=this.length-2}
+
+    else{
+        accumulator=initial
+        startIndex=this.length-1
+    }
+    for (let i=startIndex;i>=0;i--){
+        accumulator = fn(accumulator, this[i], i, this)
+    }
+    return accumulator
+}
+/*const array1 = [
+    [0, 1],
+    [2, 3],
+    [4, 5],
+];
+
+const result = array1.myReduceRight((accumulator, currentValue) =>
+    accumulator.concat(currentValue),
+);
+console.log(result);
+// Expected output: Array [4, 5, 2, 3, 0, 1]
+const a = ["1", "2", "3", "4", "5"];
+const left = a.myReduce((prev, cur) => prev + cur);
+const right = a.myReduceRight((prev, cur) => prev + cur);
+
+console.log(left); // "12345"
+console.log(right); // "54321"
+const compose =
+    (...args) =>
+        (value) =>
+            args.myReduceRight((acc, fn) => fn(acc), value);
+
+// Increment passed number
+const inc = (n) => n + 1;// Doubles the passed value
+const double = (n) => n * 2;// using composition function
+//console.log(compose(double, inc)(2)); 
+//console.log(compose(inc, double)(2)); 
+
+
+*/
+
 
 
 
