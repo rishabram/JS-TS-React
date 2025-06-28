@@ -1,4 +1,4 @@
-// Leetcode 26. Remove Duplicates from Sorted Array
+ // Leetcode 26. Remove Duplicates from Sorted Array
 /**
  * @param {number[]} nums
  * @return {number}
@@ -912,5 +912,27 @@ var numIslands = function(grid) {
 # Your NumArray object will be instantiated and called as such:
 # obj = NumArray(nums)
 # param_1 = obj.sumRange(left,right)
+
+
+
+ 
+ class Solution:
+    def findMaxLength(self, nums: List[int]) -> int:
+        prefixSum = {0:-1}
+        maxSub=0
+        diff=0
+        for i in range(len(nums)):
+            diff+=1 if nums[i]==1 else -1
+            if diff in prefixSum:
+                maxSub=max(maxSub,i-prefixSum[diff])
+            else:
+                prefixSum[diff]=i
+
+        return maxSub
+            
+            
+
+            
+
 
 
