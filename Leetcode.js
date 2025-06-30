@@ -967,6 +967,28 @@ var numIslands = function(grid) {
                 prefixSum[diff]=i
 
         return maxSub
+ //Leetcode 3. Longest Substring Without Repeating Characters
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+    
+        seen=set()
+        l=0
+        longest,currLen= 0,0
+        
+        for r in range(len(s)):
+            if s[r] not in seen:
+                currLen+=1
+            else:
+                while s[r] in seen:
+                    seen.remove(s[l])
+                    l+=1
+                currLen= r-l+1
+            longest=max(longest,currLen)
+            seen.add(s[r])
+        return longest
+
+
+                
             
             
 
