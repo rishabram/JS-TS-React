@@ -953,6 +953,33 @@ var numIslands = function(grid) {
                     while nums[l]==nums[l-1] and l<r:
                         l+=1
         return res
+ // Leetcode 643. Maximum Average Subarray I
+ class Solution:
+    def findMaxLength(self, nums: List[int]) -> int:
+        prefixSum = {0:-1}
+        maxSub=0
+        diff=0
+        for i in range(len(nums)):
+            diff+=1 if nums[i]==1 else -1
+            if diff in prefixSum:
+                maxSub=max(maxSub,i-prefixSum[diff])
+            else:
+                prefixSum[diff]=i
+
+        return maxSub
+            
+            
+
+            
+
+            
+            
+        
+
+           
+                
+                
+        
                     
 
             
