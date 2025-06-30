@@ -985,6 +985,21 @@ class Solution:
             longest=max(longest,currLen)
             seen.add(s[r])
         return longest
+
+ // Past Interview Question First Occurence of Unique Character
+ def firstUniqueChar(self,s: String)-> char:
+        unique={}
+        for char in s:
+            if char not in unique:
+                unique[char]=1
+            else:
+                unique[char]+=1
+        for char in s:
+            if unique[char]==1
+                return char
+        return -1
+ 
+ 
  
 
 
