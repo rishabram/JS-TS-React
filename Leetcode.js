@@ -955,18 +955,17 @@ var numIslands = function(grid) {
         return res
  // Leetcode 643. Maximum Average Subarray I
  class Solution:
-    def findMaxLength(self, nums: List[int]) -> int:
-        prefixSum = {0:-1}
-        maxSub=0
-        diff=0
-        for i in range(len(nums)):
-            diff+=1 if nums[i]==1 else -1
-            if diff in prefixSum:
-                maxSub=max(maxSub,i-prefixSum[diff])
-            else:
-                prefixSum[diff]=i
-
-        return maxSub
+    def findMaxAverage(self, nums: List[int], k: int) -> float:
+        n=len(nums)
+        windowSum=sum(nums[:k])
+        max=windowSum
+        for i in range(n-k):
+            windowSum= windowSum-nums[i]+nums[i+k]
+            if max<windowSum:
+                max=windowSum
+        return max/k
+        
+        
  //Leetcode 3. Longest Substring Without Repeating Characters
 class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
@@ -986,6 +985,7 @@ class Solution:
             longest=max(longest,currLen)
             seen.add(s[r])
         return longest
+ 
 
 
                 
