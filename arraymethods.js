@@ -910,10 +910,32 @@ const inc = (n) => n + 1;// Doubles the passed value
 const double = (n) => n * 2;// using composition function
 //console.log(compose(double, inc)(2)); 
 //console.log(compose(inc, double)(2)); 
-
-
 */
+Array.prototype.myReverse=function(){
+    let len=this.length
+    let copy=[]
+    for (let i=0;i<Math.floor(len /2);i++){
+        const temp = this[i]
+        this[i]=this[len-1-i]
+        this[len-1-i]=temp
 
+    }
+    return this
+}
+/*
+const items = [1, 2, 3];
+
+
+items.myReverse();
+console.log(items);
+const numbers = [3, 2, 4, 1, 5];
+const reversed = numbers.myReverse();
+// numbers and reversed are both in reversed order [5, 1, 4, 2, 3]
+reversed[0] = 5;
+console.log(numbers[0]);
+console.log([1, , 3].myReverse());// 5
+console.log([1, , 3, 4].myReverse()); // [4, 3, empty, 1]
+*/
 
 
 
