@@ -936,6 +936,29 @@ console.log(numbers[0]);
 console.log([1, , 3].myReverse());// 5
 console.log([1, , 3, 4].myReverse()); // [4, 3, empty, 1]
 */
+Array.prototype.myShift=function(){
+    let first = this[0]
+    for (let i =0;i<this.length;i++){
+        this[i]=this[i+1]
+    }
+    this.length--;
+    return first
+}
+/*
+const myFish = ["angel", "clown", "mandarin", "surgeon"];
+
+console.log("myFish before:", myFish);
+// myFish before: ['angel', 'clown', 'mandarin', 'surgeon']
+
+const shifted = myFish.myShift();
+
+console.log("myFish after:", myFish);
+// myFish after: ['clown', 'mandarin', 'surgeon']
+
+console.log("Removed this element:", shifted);
+// Removed this element: angel
+*/
+
 
 
 
