@@ -1037,6 +1037,29 @@ to the currSum with each iteration of num after the if statement checking if its
 and then do the max of a maxSub variable which is initialized to the first value of num and currSum
 */
 
+//Leetcode 191 Bit Manipulation
+ class Solution:
+    def hammingWeight(self, n: int) -> int:
+        res=0
+        while n:
+            n=n&(n-1)
+            res+=1
+        return res
+/*
+With this problem its easier simpliefied and solved by visualizing numbers in their binary form and then using a form of bit manipulation. In the answer above
+I used the n=n&(n-1) which if you write it down is essentially just doing the and operation and would cut it down as long as there are ones iwth the and operation.
+You can also use a bitwise operator like shift right and mod it before and add the mod to the result to get the number of ones
+class Solution:
+    def hammingWeight(self, n: int) -> int:
+     while n:
+       res=0
+       res += n%2
+       n>>1
+     return res
+*/
+ 
+ 
+
             
         
 
