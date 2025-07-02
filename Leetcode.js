@@ -998,6 +998,34 @@ class Solution:
             if unique[char]==1
                 return char
         return -1
+
+ // Leetcode 238 Product of Array except itself
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        length =len(nums)
+        res=[1]*length
+        prefix= 1
+        for i in range(length):
+            res[i]=prefix
+            prefix*=nums[i]
+        postfix=1
+        for i in range(length -1,-1,-1):
+            res[i]*=postfix
+            postfix*=nums[i]
+        return res
+/*
+This solution works because you can use a post and prefix sum to calculate the products before the index and 
+the value after and use a loop to calculate them and update them to a res[] array with ones with the first pass through setting the prefix sums 
+and then in the second pass multuiplying the value of the res[i] value to the post fix value
+
+*/
+
+
+
+
+
+            
+        
  
  
  
