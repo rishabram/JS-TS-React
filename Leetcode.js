@@ -1017,8 +1017,28 @@ class Solution:
 This solution works because you can use a post and prefix sum to calculate the products before the index and 
 the value after and use a loop to calculate them and update them to a res[] array with ones with the first pass through setting the prefix sums 
 and then in the second pass multuiplying the value of the res[i] value to the post fix value
-
 */
+//Leetcode 53 Maximum Subarray
+ class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        currSum=0
+        maxSub=nums[0]
+
+        for num in nums:
+            if currSum<0:
+                currSum=0
+            currSum+=num
+            maxSub=max(maxSub,currSum)
+                 
+        return maxSub
+/* 
+This solution is solved by using a sliding window concept where you have to add to currSum if its a positive sum. Also make sure to add the
+to the currSum with each iteration of num after the if statement checking if its positive or else its set to zero and then adds the iteration of num
+and then do the max of a maxSub variable which is initialized to the first value of num and currSum
+*/
+
+            
+        
 
 
 
