@@ -959,6 +959,37 @@ console.log("Removed this element:", shifted);
 // Removed this element: angel
 */
 
+Array.prototype.mySlice=function(start,end){
+    len=this.length
+    start = Math.max(0,Math.min(start<0 ? start+len :start,len))
+    end = Math.max(0,Math.min(end<0 ? end+len :end,len))
+    let res=[]
+    if (!start && !end){
+        return this
+    }
+    else if (!end){
+    for (let i=start;i<len;i++){
+        res.push(this[i])
+    }}
+    else if (start && end){
+        for (let i =start;i<end;i++){
+            res.push(this[i])
+        }
+    }
+    return res
+}
+/*const animals = ["ant", "bison", "camel", "duck", "elephant"];
+console.log(animals.mySlice(2));// Expected output: Array ["camel", "duck", "elephant"]
+console.log(animals.mySlice(2, 4));// Expected output: Array ["camel", "duck"]
+console.log(animals.mySlice(1, 5));// Expected output: Array ["bison", "camel", "duck", "elephant"]
+console.log(animals.mySlice(-2));// Expected output: Array ["duck", "elephant"]
+console.log(animals.mySlice(2, -1));// Expected output: Array ["camel", "duck"]
+console.log(animals.mySlice());// Expected output: Array ["ant", "bison", "camel", "duck", "elephant"]
+const fruits = ["Apple", "Banana", "Orange", "Mango", "Pineapple"];
+const tropical = fruits.mySlice(2);
+console.log(tropical); // ['Orange', 'Mango', 'Pineapple']*/
+
+
 
 
 
