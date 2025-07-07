@@ -991,6 +991,26 @@ console.log(tropical); // ['Orange', 'Mango', 'Pineapple']*/
 
 
 
+Array.prototype.myReversed = function() {
+    const newArr = [];
+    const len = this.length;
+    for (let i = len - 1; i >= 0; i--) {
+        newArr.push(this[i]);
+    }
+    return newArr;
+};
+/*
+const arrayLike = {
+    length: 3,
+    unrelated: "foo",
+    2: 4,
+};
+console.log(Array.prototype.myReversed.call(arrayLike));
+*/
+
+
+
+
 
 
 
