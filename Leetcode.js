@@ -1057,6 +1057,17 @@ class Solution:
        n>>1
      return res
 */
+
+ //Leetcode 217 Contains Duplicate  
+ class Solution:
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        hashset=set()
+        for n in nums:
+            if n in hashset:
+                return True
+            hashset.add(n)
+        return False
+ // I had finished this problem before with javascript but finished it with a smaller python solution
  
  
 
