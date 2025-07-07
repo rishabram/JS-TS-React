@@ -1068,6 +1068,27 @@ class Solution:
             hashset.add(n)
         return False
  // I had finished this problem before with javascript but finished it with a smaller python solution
+
+ // Leetcode 242. Valid Anagram
+ class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s)!= len(t):
+            return False
+        hashS, hashT = {},{}
+        for i in range(len(s)):
+            hashS[s[i]]=1+hashS.get(s[i],0)
+            hashT[t[i]]=1+hashT.get(t[i],0)
+        for c in s:
+            if hashS[c]!=hashT.get(c,0):
+                return False
+        return True
+ // Similar to the problem above I had solved it in javascript with a sort function and some string functions but I used hashmaps to solve it in python. For this problem you can also solve it using 
+ // a Counter dictionary or just sorting it and checking equality but this solution shows the most elegant and acceptable solution
+ // return Counter(s) == Counter(t)
+ // or 
+ // return sorted(s)== sorted(t)
+
+
  
  
 
