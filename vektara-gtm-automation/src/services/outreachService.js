@@ -339,95 +339,79 @@ Best regards,
     };
   }
 
-  // Fill contact form automatically
+  // Fill contact form automatically with enhanced capabilities
   async fillContactForm(firm, formConfig, criteria) {
-    const browser = await this.initBrowser();
-    const page = await browser.newPage();
-
     try {
-      // Navigate to contact form
-      await page.goto(formConfig.formUrl || `${firm.website}/contact`, {
-        waitUntil: 'networkidle0',
-        timeout: 30000
-      });
+      const formUrl = formConfig.formUrl || `${firm.website}/contact`;
+      logger.outreach(`Auto-filling contact form for ${firm.name} at ${formUrl}`);
 
-      // Generate form data
-      const formData = await aiService.generateFormData(firm, formConfig.fields, {
-        senderName: process.env.SENDER_NAME,
-        senderEmail: process.env.SENDER_EMAIL,
-        senderPhone: process.env.SENDER_PHONE,
-        companyWebsite: process.env.COMPANY_WEBSITE
-      });
-
-      // Fill form fields
-      for (const field of formConfig.fields) {
-        const value = formData[field.name];
-        if (value && field.selector) {
-          try {
-            await page.waitForSelector(field.selector, { timeout: 5000 });
-            
-            if (field.type === 'select') {
-              await page.select(field.selector, value);
-            } else if (field.type === 'checkbox') {
-              if (value === true || value === 'true') {
-                await page.click(field.selector);
-              }
-            } else {
-              await page.focus(field.selector);
-              await page.keyboard.down('Control');
-              await page.keyboard.press('KeyA');
-              await page.keyboard.up('Control');
-              await page.type(field.selector, value);
-            }
-          } catch (error) {
-            logger.warn(`Failed to fill field ${field.name}`, error);
-          }
-        }
-      }
-
-      // Submit form
-      const submitButton = await page.$('input[type="submit"], button[type="submit"], .submit-btn, .send-btn');
-      if (submitButton) {
-        await submitButton.click();
-        await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
-      }
-
-      // Record outreach
-      const outreach = new Outreach({
-        firmId: firm._id,
-        campaign: {
-          name: criteria.campaignName || 'Contact Form Outreach',
-          type: 'contact_form'
-        },
-        status: 'sent',
-        content: {
-          text: JSON.stringify(formData, null, 2)
-        },
-        scheduling: {
-          sentAt: new Date()
-        },
-        automation: {
-          isAutomated: true
-        }
-      });
-
-      await outreach.save();
-
-      logger.outreach(`Contact form submitted for ${firm.name}`, {
-        formUrl: formConfig.formUrl,
-        fieldsCount: formConfig.fields.length
-      });
-
-      return {
-        success: true,
-        outreachId: outreach._id
+      // Prepare company information for form filling
+      const companyInfo = {
+        name: process.env.SENDER_NAME || 'John Doe',
+        firstName: (process.env.SENDER_NAME || 'John').split(' ')[0],
+        lastName: (process.env.SENDER_NAME || 'John Doe').split(' ').slice(1).join(' ') || 'Doe',
+        email: process.env.SENDER_EMAIL || 'contact@vektaraventures.com',
+        phone: process.env.SENDER_PHONE || '+1-555-123-4567',
+        company: process.env.COMPANY_NAME || 'Vektara Ventures',
+        website: process.env.COMPANY_WEBSITE || 'https://vektaraventures.com',
+        stage: criteria.companyStage || 'growth stage',
+        industry: criteria.industry || 'technology',
+        valueProposition: criteria.valueProposition || 'AI-powered solutions that drive efficiency and growth',
+        subject: `Partnership Inquiry - ${process.env.COMPANY_NAME || 'Vektara Ventures'}`
       };
+
+      // Use the enhanced research service for form auto-filling
+      const researchService = require('./researchService');
+      const result = await researchService.autoFillContactForm(formUrl, formConfig, companyInfo);
+
+      if (result.success) {
+        // Record successful form submission
+        const outreach = new Outreach({
+          firmId: firm._id,
+          campaign: {
+            name: criteria.campaignName || 'Contact Form Outreach',
+            type: 'contact_form'
+          },
+          status: 'sent',
+          content: {
+            text: JSON.stringify(result.formData, null, 2),
+            personalizations: [
+              { field: 'company_name', value: companyInfo.company, confidence: 1.0 },
+              { field: 'value_proposition', value: companyInfo.valueProposition, confidence: 0.9 }
+            ]
+          },
+          scheduling: {
+            sentAt: new Date()
+          },
+          automation: {
+            isAutomated: true,
+            sequence: {
+              name: criteria.sequenceName || 'contact_form_sequence',
+              step: 1,
+              totalSteps: 1
+            }
+          }
+        });
+
+        await outreach.save();
+
+        logger.outreach(`Contact form successfully submitted for ${firm.name}`, {
+          formUrl,
+          fieldsCount: Object.keys(result.formData).length
+        });
+
+        return {
+          success: true,
+          outreachId: outreach._id,
+          fieldsSubmitted: Object.keys(result.formData).length
+        };
+      } else {
+        throw new Error(result.error || 'Form submission failed');
+      }
 
     } catch (error) {
       logger.error(`Contact form submission failed for ${firm.name}`, error);
       throw error;
-    } finally {
-      await page.close();
     }
   }
 

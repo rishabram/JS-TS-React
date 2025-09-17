@@ -12,7 +12,10 @@
     "analyze": "node src/scripts/analyze-results.js",
     "setup": "node src/scripts/setup.js",
     "validate": "node src/scripts/validate.js",
-    "postinstall": "echo 'Run npm run validate to check system status'"
+    "install-browser": "node src/scripts/install-browser.js",
+    "demo": "node src/scripts/demo.js",
+    "quick-start": "npm run setup && npm run install-browser && npm run validate",
+    "postinstall": "echo 'Run npm run quick-start to get started'"
   },
   "keywords": ["gtm", "automation", "vc", "private-equity", "outreach", "sales"],
   "author": "Vektara Ventures",
@@ -20,7 +23,9 @@
   "dependencies": {
     "express": "^4.18.2",
     "mongoose": "^8.0.3",
-    "puppeteer": "^21.7.0",
+    "puppeteer-core": "^23.0.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "cheerio": "^1.0.0-rc.12",
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
@@ -35,7 +40,8 @@
     "multer": "^1.4.5-lts.1",
     "validator": "^13.11.0",
     "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3"
+    "bcryptjs": "^2.4.3",
+    "chrome-launcher": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",

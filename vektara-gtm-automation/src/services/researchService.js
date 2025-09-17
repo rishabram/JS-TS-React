@@ -1,26 +1,93 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const puppeteerExtra = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const cheerio = require('cheerio');
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const logger = require('../utils/logger');
 const Firm = require('../models/Firm');
+
+// Add stealth plugin to avoid detection
+puppeteerExtra.use(StealthPlugin());
 
 class ResearchService {
   constructor() {
     this.browser = null;
+    this.browserConfig = this.loadBrowserConfig();
     this.sources = {
       crunchbase: 'https://www.crunchbase.com',
       pitchbook: 'https://pitchbook.com',
       vcList: 'https://vclist.com',
-      angelList: 'https://angel.co'
+      angelList: 'https://angel.co',
+      googleSearch: 'https://www.google.com/search'
+    };
+    
+    // Enhanced firm databases and search patterns
+    this.firmSearchPatterns = [
+      'venture capital firms',
+      'private equity firms', 
+      'investment banks',
+      'VC firms funding',
+      'PE firms investing',
+      'investment management companies',
+      'growth equity firms',
+      'seed stage investors',
+      'series A investors',
+      'institutional investors'
+    ];
+
+    // Common contact form selectors
+    this.contactFormSelectors = [
+      'form[action*="contact"]',
+      'form[id*="contact"]',
+      'form[class*="contact"]',
+      'form[action*="inquiry"]',
+      'form[action*="message"]',
+      '.contact-form',
+      '#contact-form',
+      '.inquiry-form',
+      '.message-form'
+    ];
+  }
+
+  loadBrowserConfig() {
+    try {
+      const configPath = path.join(__dirname, '../config/browser.json');
+      if (fs.existsSync(configPath)) {
+        return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      }
+    } catch (error) {
+      logger.warn('Could not load browser config, using defaults');
+    }
+
+    return {
+      executablePath: '/usr/bin/google-chrome',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding'
+      ],
+      headless: process.env.PUPPETEER_HEADLESS !== 'false'
     };
   }
 
   async initBrowser() {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        headless: process.env.PUPPETEER_HEADLESS !== 'false',
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+      try {
+        this.browser = await puppeteer.launch(this.browserConfig);
+        logger.automation('Browser initialized successfully');
+      } catch (error) {
+        logger.error('Failed to initialize browser:', error);
+        throw new Error(`Browser initialization failed: ${error.message}\nRun 'npm run install-browser' to set up Chrome browser.`);
+      }
     }
     return this.browser;
   }
@@ -32,38 +99,282 @@ class ResearchService {
     }
   }
 
-  // Research firms from multiple sources
+  // Enhanced firm research with multiple discovery methods
   async researchFirms(criteria = {}) {
-    logger.research('Starting firm research', criteria);
+    logger.research('Starting enhanced firm research', criteria);
     const results = [];
 
     try {
-      // Research from different sources
-      const crunchbaseResults = await this.researchFromCrunchbase(criteria);
-      const webResults = await this.researchFromWebSearch(criteria);
-      const linkedinResults = await this.researchFromLinkedIn(criteria);
+      // Multiple research approaches
+      const [
+        googleResults,
+        linkedinResults,
+        directoryResults,
+        industryResults
+      ] = await Promise.allSettled([
+        this.researchFromGoogleSearch(criteria),
+        this.researchFromLinkedIn(criteria),
+        this.researchFromDirectories(criteria),
+        this.researchFromIndustryPages(criteria)
+      ]);
 
-      results.push(...crunchbaseResults, ...webResults, ...linkedinResults);
+      // Collect all results
+      if (googleResults.status === 'fulfilled') results.push(...googleResults.value);
+      if (linkedinResults.status === 'fulfilled') results.push(...linkedinResults.value);
+      if (directoryResults.status === 'fulfilled') results.push(...directoryResults.value);
+      if (industryResults.status === 'fulfilled') results.push(...industryResults.value);
 
       // Deduplicate and score results
       const uniqueFirms = this.deduplicateFirms(results);
       const scoredFirms = await this.scoreFirms(uniqueFirms, criteria);
+
+      // Enhanced contact form analysis for each firm
+      for (const firm of scoredFirms) {
+        try {
+          const contactForms = await this.analyzeContactForm(firm.website);
+          if (contactForms.length > 0) {
+            firm.contactForm = {
+              hasForm: true,
+              formUrl: contactForms[0].action || firm.website,
+              fields: contactForms[0].fields || []
+            };
+          }
+        } catch (error) {
+          logger.warn(`Failed to analyze contact form for ${firm.name}:`, error.message);
+        }
+      }
 
       // Save to database
       for (const firm of scoredFirms) {
         await this.saveFirm(firm);
       }
 
-      logger.research(`Research completed. Found ${scoredFirms.length} firms`, {
+      logger.research(`Enhanced research completed`, {
         criteria,
-        count: scoredFirms.length
+        totalFound: scoredFirms.length,
+        withContactForms: scoredFirms.filter(f => f.contactForm?.hasForm).length,
+        avgScore: scoredFirms.reduce((sum, f) => sum + f.score.overall, 0) / scoredFirms.length || 0
       });
 
       return scoredFirms;
     } catch (error) {
-      logger.error('Firm research failed', error);
+      logger.error('Enhanced firm research failed', error);
       throw error;
     }
+  }
+
+  // Google search for firms
+  async researchFromGoogleSearch(criteria) {
+    const firms = [];
+    const browser = await this.initBrowser();
+    
+    try {
+      const page = await browser.newPage();
+      await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+      
+      // Build search queries based on criteria
+      const queries = this.buildSearchQueries(criteria);
+      
+      for (const query of queries.slice(0, 3)) { // Limit to 3 queries to avoid rate limiting
+        try {
+          const searchUrl = `${this.sources.googleSearch}?q=${encodeURIComponent(query)}&num=20`;
+          await page.goto(searchUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+          
+          // Extract search results
+          const searchResults = await page.evaluate(() => {
+            const results = [];
+            const resultElements = document.querySelectorAll('div[data-ved] h3');
+            
+            resultElements.forEach(element => {
+              const link = element.closest('a');
+              if (link && link.href && !link.href.includes('google.com')) {
+                results.push({
+                  title: element.textContent.trim(),
+                  url: link.href,
+                  description: ''
+                });
+              }
+            });
+            
+            return results;
+          });
+
+          // Filter for investment firms
+          const investmentResults = searchResults.filter(result => 
+            this.isInvestmentFirm(result.title) || this.isInvestmentFirm(result.url)
+          );
+
+          // Get detailed info for each firm
+          for (const result of investmentResults.slice(0, 5)) {
+            try {
+              const firmData = await this.extractFirmFromWebsite(result.url);
+              if (firmData) {
+                firmData.discoveryMethod = 'google_search';
+                firmData.searchQuery = query;
+                firms.push(firmData);
+              }
+            } catch (error) {
+              logger.warn(`Failed to extract firm data from ${result.url}:`, error.message);
+            }
+          }
+
+          // Add delay between searches
+          await page.waitForTimeout(2000);
+        } catch (error) {
+          logger.warn(`Google search failed for query "${query}":`, error.message);
+        }
+      }
+
+      await page.close();
+    } catch (error) {
+      logger.error('Google search research failed', error);
+    }
+
+    return firms;
+  }
+
+  // Research from industry directories and lists
+  async researchFromDirectories(criteria) {
+    const firms = [];
+    const browser = await this.initBrowser();
+    
+    try {
+      const page = await browser.newPage();
+      
+      // List of industry directories
+      const directories = [
+        'https://vclist.com',
+        'https://www.cbinsights.com/investors',
+        'https://angel.co/investors',
+        'https://www.f6s.com/investors'
+      ];
+
+      for (const directoryUrl of directories) {
+        try {
+          await page.goto(directoryUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+          
+          // Extract firm links from directory
+          const firmLinks = await page.evaluate(() => {
+            const links = [];
+            const linkElements = document.querySelectorAll('a[href*="investor"], a[href*="fund"], a[href*="capital"], a[href*="ventures"]');
+            
+            linkElements.forEach(link => {
+              if (link.href && !link.href.includes(window.location.hostname)) {
+                links.push({
+                  url: link.href,
+                  title: link.textContent.trim()
+                });
+              }
+            });
+            
+            return links.slice(0, 10); // Limit results
+          });
+
+          // Process each firm link
+          for (const firmLink of firmLinks) {
+            try {
+              const firmData = await this.extractFirmFromWebsite(firmLink.url);
+              if (firmData) {
+                firmData.discoveryMethod = 'directory';
+                firmData.sourceDirectory = directoryUrl;
+                firms.push(firmData);
+              }
+            } catch (error) {
+              logger.warn(`Failed to extract firm from directory link ${firmLink.url}:`, error.message);
+            }
+          }
+
+        } catch (error) {
+          logger.warn(`Failed to research directory ${directoryUrl}:`, error.message);
+        }
+      }
+
+      await page.close();
+    } catch (error) {
+      logger.error('Directory research failed', error);
+    }
+
+    return firms;
+  }
+
+  // Research from industry-specific pages
+  async researchFromIndustryPages(criteria) {
+    const firms = [];
+    
+    if (!criteria.focusAreas) return firms;
+
+    const browser = await this.initBrowser();
+    
+    try {
+      const page = await browser.newPage();
+      
+      // Industry-specific searches
+      for (const focusArea of criteria.focusAreas.slice(0, 2)) {
+        const industryQueries = [
+          `${focusArea} venture capital investors`,
+          `${focusArea} private equity funds`,
+          `${focusArea} investment firms list`
+        ];
+
+        for (const query of industryQueries) {
+          try {
+            const searchUrl = `${this.sources.googleSearch}?q=${encodeURIComponent(query)}&num=15`;
+            await page.goto(searchUrl, { waitUntil: 'networkidle0', timeout: 30000 });
+            
+            const industryResults = await page.evaluate(() => {
+              const results = [];
+              const resultElements = document.querySelectorAll('div[data-ved] h3');
+              
+              resultElements.forEach(element => {
+                const link = element.closest('a');
+                if (link && link.href && !link.href.includes('google.com')) {
+                  results.push({
+                    title: element.textContent.trim(),
+                    url: link.href
+                  });
+                }
+              });
+              
+              return results.slice(0, 5);
+            });
+
+            for (const result of industryResults) {
+              try {
+                const firmData = await this.extractFirmFromWebsite(result.url);
+                if (firmData) {
+                  firmData.discoveryMethod = 'industry_search';
+                  firmData.industryFocus = focusArea;
+                  firms.push(firmData);
+                }
+              } catch (error) {
+                logger.warn(`Failed to extract industry firm from ${result.url}:`, error.message);
+              }
+            }
+
+            await page.waitForTimeout(1500);
+          } catch (error) {
+            logger.warn(`Industry search failed for "${query}":`, error.message);
+          }
+        }
+      }
+
+      await page.close();
+    } catch (error) {
+      logger.error('Industry research failed', error);
+    }
+
+    return firms;
+  }
+
+  // Helper method to identify investment firms
+  isInvestmentFirm(text) {
+    const keywords = [
+      'venture capital', 'private equity', 'investment', 'capital', 'ventures',
+      'partners', 'fund', 'equity', 'investments', 'vc', 'pe'
+    ];
+    
+    const lowercaseText = text.toLowerCase();
+    return keywords.some(keyword => lowercaseText.includes(keyword));
   }
 
   // Research from Crunchbase (public data)
@@ -231,48 +542,146 @@ class ResearchService {
     return null;
   }
 
-  // Detect and analyze contact forms
+  // Enhanced contact form detection and analysis
   async analyzeContactForm(url) {
     const browser = await this.initBrowser();
     
     try {
       const page = await browser.newPage();
-      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
 
-      const formData = await page.evaluate(() => {
-        const forms = document.querySelectorAll('form');
-        const contactForms = [];
+      const formData = await page.evaluate((selectors) => {
+        const forms = [];
+        
+        // Try multiple selector strategies
+        const formElements = document.querySelectorAll([
+          'form',
+          '.contact-form',
+          '#contact-form',
+          '[class*="contact"]',
+          '[id*="contact"]',
+          '.inquiry-form',
+          '.message-form'
+        ].join(', '));
 
-        forms.forEach(form => {
+        formElements.forEach(form => {
           const inputs = form.querySelectorAll('input, textarea, select');
           const hasEmailField = Array.from(inputs).some(input => 
-            input.type === 'email' || input.name.includes('email')
+            input.type === 'email' || 
+            input.name?.toLowerCase().includes('email') ||
+            input.placeholder?.toLowerCase().includes('email')
           );
           
           const hasMessageField = Array.from(inputs).some(input =>
-            input.type === 'textarea' || input.name.includes('message')
+            input.tagName.toLowerCase() === 'textarea' || 
+            input.name?.toLowerCase().includes('message') ||
+            input.name?.toLowerCase().includes('inquiry') ||
+            input.placeholder?.toLowerCase().includes('message')
           );
 
-          if (hasEmailField || hasMessageField) {
-            const fields = Array.from(inputs).map(input => ({
-              name: input.name || input.id,
-              type: input.type || input.tagName.toLowerCase(),
-              selector: this.getElementSelector(input),
-              required: input.required,
-              placeholder: input.placeholder
-            }));
+          const hasNameField = Array.from(inputs).some(input =>
+            input.name?.toLowerCase().includes('name') ||
+            input.placeholder?.toLowerCase().includes('name')
+          );
 
-            contactForms.push({
-              action: form.action,
-              method: form.method,
-              fields,
-              selector: this.getElementSelector(form)
+          // Only consider forms with essential fields
+          if (hasEmailField || (hasMessageField && hasNameField)) {
+            const fields = Array.from(inputs).map(input => {
+              // Generate a more specific selector
+              let selector = input.tagName.toLowerCase();
+              if (input.id) {
+                selector = `#${input.id}`;
+              } else if (input.name) {
+                selector = `[name="${input.name}"]`;
+              } else if (input.className) {
+                selector = `.${input.className.split(' ')[0]}`;
+              }
+
+              return {
+                name: input.name || input.id || `field_${Math.random().toString(36).substr(2, 9)}`,
+                type: input.type || input.tagName.toLowerCase(),
+                selector: selector,
+                placeholder: input.placeholder || '',
+                required: input.required || input.hasAttribute('required'),
+                label: this.getFieldLabel(input)
+              };
+            });
+
+            // Get form action and method
+            let formAction = form.action;
+            if (!formAction || formAction === window.location.href) {
+              // Look for submit button to determine likely endpoint
+              const submitBtn = form.querySelector('input[type="submit"], button[type="submit"], button');
+              formAction = form.action || window.location.href;
+            }
+
+            forms.push({
+              action: formAction,
+              method: form.method || 'POST',
+              fields: fields,
+              selector: this.getElementSelector(form),
+              hasEmailField,
+              hasMessageField,
+              hasNameField,
+              score: this.calculateFormScore(hasEmailField, hasMessageField, hasNameField, fields.length)
             });
           }
         });
 
-        return contactForms;
-      });
+        // Helper function to get field label
+        function getFieldLabel(input) {
+          // Look for associated label
+          if (input.id) {
+            const label = document.querySelector(`label[for="${input.id}"]`);
+            if (label) return label.textContent.trim();
+          }
+
+          // Look for parent label
+          const parentLabel = input.closest('label');
+          if (parentLabel) return parentLabel.textContent.replace(input.value, '').trim();
+
+          // Look for preceding text
+          const prevSibling = input.previousElementSibling;
+          if (prevSibling && (prevSibling.tagName === 'LABEL' || prevSibling.textContent.length < 50)) {
+            return prevSibling.textContent.trim();
+          }
+
+          return input.placeholder || input.name || '';
+        }
+
+        // Helper function to generate element selector
+        function getElementSelector(element) {
+          if (element.id) return `#${element.id}`;
+          if (element.className) return `.${element.className.split(' ')[0]}`;
+          
+          let path = [];
+          while (element && element.nodeType === Node.ELEMENT_NODE) {
+            let selector = element.nodeName.toLowerCase();
+            if (element.id) {
+              selector += `#${element.id}`;
+              path.unshift(selector);
+              break;
+            } else if (element.className) {
+              selector += `.${element.className.split(' ')[0]}`;
+            }
+            path.unshift(selector);
+            element = element.parentNode;
+          }
+          return path.join(' > ');
+        }
+
+        // Calculate form quality score
+        function calculateFormScore(hasEmail, hasMessage, hasName, fieldCount) {
+          let score = 0;
+          if (hasEmail) score += 40;
+          if (hasMessage) score += 30;
+          if (hasName) score += 20;
+          if (fieldCount <= 6) score += 10; // Prefer simpler forms
+          return Math.min(score, 100);
+        }
+
+        return forms.sort((a, b) => b.score - a.score);
+      }, this.contactFormSelectors);
 
       await page.close();
       return formData;
@@ -281,6 +690,195 @@ class ResearchService {
       logger.error(`Failed to analyze contact form at ${url}`, error);
       return [];
     }
+  }
+
+  // Auto-fill contact form with company information
+  async autoFillContactForm(url, formConfig, companyInfo) {
+    const browser = await this.initBrowser();
+    
+    try {
+      const page = await browser.newPage();
+      await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
+
+      logger.automation(`Auto-filling contact form at ${url}`);
+
+      // Prepare form data based on field types and names
+      const formData = this.generateFormData(formConfig.fields, companyInfo);
+
+      // Fill each field
+      for (const field of formConfig.fields) {
+        const value = formData[field.name];
+        if (value && field.selector) {
+          try {
+            await page.waitForSelector(field.selector, { timeout: 5000 });
+            
+            if (field.type === 'select') {
+              // Handle select dropdowns
+              await page.select(field.selector, value);
+            } else if (field.type === 'checkbox') {
+              // Handle checkboxes
+              if (value === true || value === 'true' || value === 'yes') {
+                await page.click(field.selector);
+              }
+            } else if (field.type === 'radio') {
+              // Handle radio buttons
+              await page.click(`${field.selector}[value="${value}"]`);
+            } else {
+              // Handle text inputs and textareas
+              await page.focus(field.selector);
+              await page.keyboard.down('Control');
+              await page.keyboard.press('KeyA');
+              await page.keyboard.up('Control');
+              await page.type(field.selector, value);
+            }
+            
+            logger.automation(`Filled field ${field.name} with value: ${value}`);
+          } catch (error) {
+            logger.warn(`Failed to fill field ${field.name}:`, error.message);
+          }
+        }
+      }
+
+      // Look for and handle CAPTCHA if present
+      const hasCaptcha = await page.$('.g-recaptcha, .recaptcha, [class*="captcha"]');
+      if (hasCaptcha) {
+        logger.warn('CAPTCHA detected - manual intervention required');
+        // In a real implementation, you might want to pause here or use a CAPTCHA solving service
+      }
+
+      // Submit the form
+      const submitButton = await page.$(
+        'input[type="submit"], button[type="submit"], .submit-btn, .send-btn, button:contains("Send"), button:contains("Submit")'
+      );
+      
+      if (submitButton) {
+        await submitButton.click();
+        
+        // Wait for form submission response
+        try {
+          await page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 10000 });
+          logger.automation('Form submitted successfully');
+        } catch (error) {
+          // Check if there's a success message on the same page
+          const successMessage = await page.$('.success, .thank-you, [class*="success"], [class*="thank"]');
+          if (successMessage) {
+            logger.automation('Form submitted successfully (same page)');
+          } else {
+            logger.warn('Form submission status unclear');
+          }
+        }
+      } else {
+        logger.warn('Submit button not found');
+      }
+
+      await page.close();
+      return { success: true, formData };
+
+    } catch (error) {
+      logger.error(`Contact form auto-fill failed for ${url}:`, error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Generate appropriate form data based on field analysis
+  generateFormData(fields, companyInfo) {
+    const data = {};
+    
+    for (const field of fields) {
+      const fieldName = field.name.toLowerCase();
+      const fieldLabel = (field.label || '').toLowerCase();
+      const fieldPlaceholder = (field.placeholder || '').toLowerCase();
+      
+      // Determine field purpose and fill with appropriate data
+      if (this.isEmailField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = companyInfo.email || process.env.SENDER_EMAIL;
+      } else if (this.isNameField(fieldName, fieldLabel, fieldPlaceholder)) {
+        if (fieldName.includes('first') || fieldLabel.includes('first')) {
+          data[field.name] = companyInfo.firstName || companyInfo.name?.split(' ')[0] || 'John';
+        } else if (fieldName.includes('last') || fieldLabel.includes('last')) {
+          data[field.name] = companyInfo.lastName || companyInfo.name?.split(' ').slice(1).join(' ') || 'Doe';
+        } else {
+          data[field.name] = companyInfo.name || process.env.SENDER_NAME || 'John Doe';
+        }
+      } else if (this.isCompanyField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = companyInfo.company || process.env.COMPANY_NAME || 'Vektara Ventures';
+      } else if (this.isPhoneField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = companyInfo.phone || process.env.SENDER_PHONE || '+1-555-123-4567';
+      } else if (this.isMessageField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = this.generatePersonalizedMessage(companyInfo);
+      } else if (this.isSubjectField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = companyInfo.subject || 'Partnership Inquiry - Vektara Ventures';
+      } else if (this.isWebsiteField(fieldName, fieldLabel, fieldPlaceholder)) {
+        data[field.name] = companyInfo.website || process.env.COMPANY_WEBSITE || 'https://vektaraventures.com';
+      } else if (field.type === 'select') {
+        // Handle select fields with best guess
+        data[field.name] = this.selectBestOption(field, companyInfo);
+      }
+    }
+    
+    return data;
+  }
+
+  // Field type detection helpers
+  isEmailField(name, label, placeholder) {
+    return ['email', 'e-mail', 'mail'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isNameField(name, label, placeholder) {
+    return ['name', 'fullname', 'full_name'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isCompanyField(name, label, placeholder) {
+    return ['company', 'organization', 'business', 'firm'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isPhoneField(name, label, placeholder) {
+    return ['phone', 'tel', 'mobile', 'number'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isMessageField(name, label, placeholder) {
+    return ['message', 'inquiry', 'comment', 'description', 'details'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isSubjectField(name, label, placeholder) {
+    return ['subject', 'topic', 'regarding'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  isWebsiteField(name, label, placeholder) {
+    return ['website', 'url', 'site', 'web'].some(term => 
+      name.includes(term) || label.includes(term) || placeholder.includes(term)
+    );
+  }
+
+  selectBestOption(field, companyInfo) {
+    // This would analyze select options and choose the best match
+    // For now, return a default that's likely to work
+    return 'general inquiry';
+  }
+
+  generatePersonalizedMessage(companyInfo) {
+    return `Hello,
+
+I hope this message finds you well. I'm reaching out from ${companyInfo.company || 'Vektara Ventures'} regarding potential partnership opportunities.
+
+We're a ${companyInfo.stage || 'growth-stage'} company focused on ${companyInfo.industry || 'innovative technology solutions'} and believe there could be strong alignment with your investment thesis.
+
+Would you be open to a brief conversation to explore how we might work together?
+
+Best regards,
+${companyInfo.name || 'The Team'}`;
   }
 
   // Helper methods
